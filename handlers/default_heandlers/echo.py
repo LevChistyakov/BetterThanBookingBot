@@ -1,10 +1,10 @@
-from telebot.types import Message
+from aiogram.types import Message
 
-from loader import bot
+from loader import dp
 
 
 # Эхо хендлер, куда летят текстовые сообщения без указанного состояния
-@bot.message_handler(state=None)
-def bot_echo(message: Message):
-    bot.reply_to(message, "Эхо без состояния или фильтра.\nСообщение:"
-                          f"{message.text}")
+@dp.message_handler(state=None)
+async def bot_echo(message: Message):
+    await message.answer("Эхо без состояния или фильтра."
+                         f"\nСообщение: {message.text}")
