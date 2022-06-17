@@ -1,1 +1,1 @@
-from . import lowprice
+from . import get_hotels

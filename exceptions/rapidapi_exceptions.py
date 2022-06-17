@@ -1,0 +1,2 @@
+class ResponseJsonException(BaseException):
+    pass
