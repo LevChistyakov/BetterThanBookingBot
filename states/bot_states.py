@@ -16,9 +16,14 @@ class BestDealStates(StatesGroup):
 class SelectCity(StatesGroup):
     wait_city_name = State()
     select_city = State()
-    continue_with_city = State()
-    not_found = State()
 
 
 class SelectDates(StatesGroup):
-    pass
+    start_select_date_in = State()
+    select_date_in = State()
+
+    start_select_date_out = State()
+    select_date_out = State()
+
+    is_date_correct = State()
+

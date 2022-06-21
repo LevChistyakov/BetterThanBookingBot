@@ -11,19 +11,19 @@ class Cities(NamedTuple):
     buttons: InlineKeyboardMarkup
 
 
-async def get_cities(city: str) -> Optional[Cities]:
+async def create_cities_message(city: str) -> Optional[Cities]:
     try:
         found = await find_cities(city=city)
     except ResponseJsonException:
-        return None
+        found = {}
 
-    if found is None:
-        return None
+    if not found:
+        return
 
     if len(found) == 1:
         text = f'Искать в городе {"".join(city for city in found)}?'
     else:
-        text = 'Пожалуйста, уточните город: '
+        text = 'Пожалуйста, уточните город:'
 
     buttons = create_cities_markup(cities_dict=found)
     return Cities(message=text, buttons=buttons)
