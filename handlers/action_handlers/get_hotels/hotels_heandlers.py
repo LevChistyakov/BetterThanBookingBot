@@ -8,7 +8,7 @@ from loader import dp
 
 @dp.message_handler(commands=['lowprice', 'highprice', 'bestdeal'])
 async def define_state(message: Message, state: FSMContext):
-    await message.answer('Отправьте боту город для поиска: ')
+    await message.answer('<b>↘️ Отправьте боту город для поиска</b>')
     await SelectCity.wait_city_name.set()
 
     command = message.text.lstrip('/')

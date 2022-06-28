@@ -12,6 +12,6 @@ async def set_city_id(call: CallbackQuery, state: FSMContext):
     await state.update_data(city_id=city_id)
 
     await call.answer('Город выбран', show_alert=False)
-    await call.message.edit_text('Город выбран!', reply_markup=None)
+    await call.message.edit_text('<b>🏙 Город выбран!</b>', reply_markup=None)
 
     await start_select_date_in(call=call)

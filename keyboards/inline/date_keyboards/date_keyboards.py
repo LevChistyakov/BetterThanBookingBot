@@ -32,20 +32,3 @@ def get_readble_date(str_date: str) -> str:
 
     return f'{day.lstrip("0")}-е {NUMBERS_TO_MONTHS[month]} {year}-го года'
 
-
-def is_date_in_correct_markup():
-    is_date_correct = InlineKeyboardMarkup()
-    yes_button = InlineKeyboardButton('Да', callback_data='date_in_correct')
-    no_button = InlineKeyboardButton('Нет', callback_data='date_in_incorrect')
-    is_date_correct.row(yes_button, no_button)
-
-    return is_date_correct
-
-
-def is_date_out_correct_markup():
-    is_date_correct = InlineKeyboardMarkup()
-    yes_button = InlineKeyboardButton('Да', callback_data='date_out_correct')
-    no_button = InlineKeyboardButton('Нет', callback_data='date_out_incorrect')
-    is_date_correct.row(yes_button, no_button)
-
-    return is_date_correct

@@ -21,9 +21,9 @@ async def create_cities_message(city: str) -> Optional[Cities]:
         return
 
     if len(found) == 1:
-        text = f'Искать в городе {"".join(city for city in found)}?'
+        text = f'<b>Искать в городе {"".join(city for city in found)}?</b>'
     else:
-        text = 'Пожалуйста, уточните город:'
+        text = '↘️ <b>Пожалуйста, уточните город</b>'
 
     buttons = create_cities_markup(cities_dict=found)
     return Cities(message=text, buttons=buttons)
