@@ -1,6 +1,8 @@
 from aiogram.dispatcher import FSMContext
 from aiogram.types.callback_query import CallbackQuery
 
+from datetime import datetime
+
 from loader import dp
 from states.bot_states import SelectDates, GetHotels
 from utils.is_correct_inline import is_correct_markup
@@ -15,7 +17,7 @@ async def start_select_date_in(call: CallbackQuery):
     await SelectDates.select_date_in.set()
 
 
-async def start_select_date_out(call: CallbackQuery, date_in: str):
+async def start_select_date_out(call: CallbackQuery, date_in: datetime):
     calendar_info = create_calendar(minimal_date=date_in)
     await call.message.answer(f'↘️ <b>Укажите {calendar_info.date_type} выезда</b>',
                               reply_markup=calendar_info.calendar)
@@ -24,7 +26,7 @@ async def start_select_date_out(call: CallbackQuery, date_in: str):
 
 @dp.callback_query_handler(state=SelectDates.select_date_in)
 async def select_date_in(call: CallbackQuery, state: FSMContext):
-    result, keyboard, step = CustomCalendar(locale='ru').process(call_data=call.data)
+    result, keyboard, step = CustomCalendar().process(call_data=call.data)
     if not result and keyboard:
         await call.message.edit_text(f'↘️ <b>Укажите {CUSTOM_STEPS[step]} заезда</b>',
                                      reply_markup=keyboard)
@@ -39,7 +41,9 @@ async def select_date_in(call: CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(state=SelectDates.select_date_out)
 async def select_date_out(call: CallbackQuery, state: FSMContext):
-    result, keyboard, step = CustomCalendar(locale='ru').process(call_data=call.data)
+    state_data = await state.get_data()
+    date_in = state_data.get('date_in')
+    result, keyboard, step = CustomCalendar(min_date=date_in).process(call_data=call.data)
     if not result and keyboard:
         await call.message.edit_text(f'↘️ <b>Укажите {CUSTOM_STEPS[step]} выезда</b>',
                                      reply_markup=keyboard)
@@ -55,7 +59,9 @@ async def select_date_out(call: CallbackQuery, state: FSMContext):
 @dp.callback_query_handler(state=SelectDates.is_date_correct)
 async def send_confirmation_date(call: CallbackQuery, state: FSMContext):
     state_data = await state.get_data()
+    city = state_data.get('city_name')
     date_in = state_data.get('date_in')
+    date_out = state_data.get('date_out')
 
     if call.data == 'date_in_incorrect':
         await call.answer('Попробуйте еще раз', show_alert=True)
@@ -76,4 +82,10 @@ async def send_confirmation_date(call: CallbackQuery, state: FSMContext):
         await call.answer('Дата выезда указана', show_alert=False)
         await call.message.delete()
         await call.message.answer('📅 <b> Дата выбрана!</b>')
-        await GetHotels.get_hotels.set()
+        await call.message.answer(f'❓ <b>Город: </b>{city}\n'
+                                  f'<b>Дата заезда: </b>{get_readble_date(str(date_in))}\n'
+                                  f'<b>Дата выезда: </b>{get_readble_date(str(date_out))}\n'
+                                  f'\n'
+                                  f'<b>Все верно?</b>', reply_markup=is_correct_markup('city_info'))
+        await GetHotels.is_info_correct.set()
+

@@ -2,7 +2,7 @@ from aiogram.types.inline_keyboard import InlineKeyboardMarkup, InlineKeyboardBu
 from telegram_bot_calendar import DetailedTelegramCalendar
 
 from datetime import datetime
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 
 CUSTOM_STEPS = {'y': 'год', 'm': 'месяц', 'd': 'день'}
@@ -15,14 +15,20 @@ class CustomCalendar(DetailedTelegramCalendar):
     next_button = '➡️'
     prev_button = '⬅️'
 
+    def __init__(self, min_date=datetime.now().date()):
+        super().__init__(locale='ru', min_date=min_date)
+
 
 class CalendarMarkupAndStep(NamedTuple):
     calendar: InlineKeyboardMarkup
     date_type: str
 
 
-def create_calendar(minimal_date: str = datetime.now().date()) -> CalendarMarkupAndStep:
-    calendar, step = CustomCalendar(locale='eo', min_date=minimal_date).build()
+def create_calendar(minimal_date: Optional[datetime] = None) -> CalendarMarkupAndStep:
+    if minimal_date is None:
+        calendar, step = CustomCalendar().build()
+    else:
+        calendar, step = CustomCalendar(min_date=minimal_date).build()
 
     return CalendarMarkupAndStep(calendar=calendar, date_type=CUSTOM_STEPS[step])
 

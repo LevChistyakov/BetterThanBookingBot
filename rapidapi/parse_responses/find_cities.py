@@ -1,5 +1,3 @@
-from typing import Optional
-
 from exceptions.rapidapi_exceptions import ResponseJsonException
 from rapidapi.rapidapi_requests.cities_request import get_cities_json
 

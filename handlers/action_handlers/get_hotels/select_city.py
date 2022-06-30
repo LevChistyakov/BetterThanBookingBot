@@ -10,6 +10,7 @@ from loader import dp
 @dp.message_handler(state=SelectCity.wait_city_name)
 async def get_cities_by_name(message: Message, state: FSMContext):
     city = message.text
+    await state.update_data(city_name=city)
 
     text_to_delete, sticker_to_delete = await send_waiting_message(message)
     cities_message = await create_cities_message(city)

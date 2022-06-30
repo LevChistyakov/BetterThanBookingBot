@@ -17,5 +17,6 @@ class SelectDates(StatesGroup):
 
 
 class GetHotels(StatesGroup):
-    get_hotels = State()
+    is_info_correct = State()
+    get_hotels_menu = State()
 
