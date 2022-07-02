@@ -6,23 +6,24 @@ KM = float
 USD = float
 Link = str
 ID = int
+Degrees = float
+Latitude = Degrees
+Longitude = Degrees
 
 
 class HotelInfo(NamedTuple):
+    hotel_id: ID
     name: str
     address: str
     distance_from_center: KM
     total_cost: USD
     cost_by_night: USD
+    photo: Link
+    coordinates: tuple[Latitude, Longitude]
 
 
 class HotelMessage(NamedTuple):
-    message: str
+    text: str
+    photo: Link
     buttons: InlineKeyboardMarkup
 
-
-class SearchInfo(NamedTuple):
-    hotel_id: str
-    km_to_center: KM
-    date_in: date
-    date_out: date

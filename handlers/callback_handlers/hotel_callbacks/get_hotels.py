@@ -1,11 +1,10 @@
 from aiogram.dispatcher import FSMContext
-from aiogram.types.message import Message
 from aiogram.types.callback_query import CallbackQuery
 
-from utils.named_tuples import SearchInfo
+from utils.named_tuples import HotelInfo
 from states.bot_states import GetHotels
-from rapidapi.create_messages.get_hotel import create_hotel_message
 from rapidapi.parse_responses.find_hotels import get_hotels_info
+from rapidapi.create_messages.get_hotel import create_hotel_message
 from utils.search_waiting import send_waiting_message, del_waiting_messages
 from loader import dp, bot
 
@@ -18,42 +17,32 @@ async def is_info_correct(call: CallbackQuery, state: FSMContext):
         text_to_delete, sticker_to_delete = await send_waiting_message(message)
 
         state_data = await state.get_data()
-        hotels_info = await get_hotels_info(data=state_data)
-        await state.update_data(hotels_info=hotels_info)
+        hotels_info: list[HotelInfo] = await get_hotels_info(data=state_data)
+        await state.update_data(hotels_info=hotels_info, hotel_index=1)
 
-        date_in, date_out = state_data.get('date_in'), state_data.get('date_out')
-        hotel_id, hotel_km, hotel_photo = hotels_info[0]['id'], hotels_info[0]['km'], hotels_info[0]['photo']
-        to_search = SearchInfo(hotel_id=hotel_id, km_to_center=hotel_km, date_in=date_in, date_out=date_out)
-        hotel_message, hotel_markup = await create_hotel_message(hotel_info_for_search=to_search)
-
+        hotel_info = hotels_info[0]
+        hotel_message = create_hotel_message(hotel_info)
         await del_waiting_messages(text=text_to_delete, sticker=sticker_to_delete)
-        await bot.send_photo(chat_id=message.chat.id, photo=hotel_photo, caption=hotel_message,
-                             reply_markup=hotel_markup)
-        await state.update_data(hotel_index=1)
+        await bot.send_photo(chat_id=message.chat.id, photo=hotel_message.photo, caption=hotel_message.text,
+                             reply_markup=hotel_message.buttons)
+
         await GetHotels.get_hotels_menu.set()
 
     elif call.data == 'city_info_incorrect':
         pass
 
 
-@dp.message_handler(state=GetHotels.get_hotels_menu)
-async def show_new_hotel(message: Message, state: FSMContext):
-    text_to_delete, sticker_to_delete = await send_waiting_message(message)
-
-    state_data = await state.get_data()
-    print(state_data)
-
-    hotel_index = state_data.get('hotel_index')
-    hotel = state_data.get('hotels_info')[hotel_index]
-
-    date_in, date_out = state_data.get('date_in'), state_data.get('date_out')
-    hotel_id, hotel_km, hotel_photo = hotel['id'], hotel['km'], hotel['photo']
-    to_search = SearchInfo(hotel_id=hotel_id, km_to_center=hotel_km, date_in=date_in, date_out=date_out)
-    hotel_message, hotel_markup = await create_hotel_message(hotel_info_for_search=to_search)
-
-    await del_waiting_messages(text=text_to_delete, sticker=sticker_to_delete)
-    await bot.send_photo(chat_id=message.chat.id, photo=hotel_photo, caption=hotel_message, reply_markup=hotel_markup)
-    await state.update_data(hotel_index=hotel_index + 1)
-    await GetHotels.get_hotels_menu.set()
-
-
+# @dp.callback_query_handler(state=GetHotels.get_hotels_menu)
+# async def show_new_hotel(call: CallbackQuery, state: FSMContext):
+#     text_to_delete, sticker_to_delete = await send_waiting_message(call.message)
+#     state_data = await state.get_data()
+#
+#     hotel_index = state_data.get('hotel_index')
+#     hotels_info: list[HotelInfo] = state_data.get('hotels_info')
+#     hotel = hotels_info[hotel_index]
+#     hotel_message = create_hotel_message(hotel_info=hotel)
+#
+#     await del_waiting_messages(text=text_to_delete, sticker=sticker_to_delete)
+#     await bot.send_photo(chat_id=call.message.chat.id, photo=hotel_message.photo, caption=hotel_message.text,
+#                          reply_markup=hotel_message.buttons)
+#     await state.update_data(hotel_index=hotel_index + 1)
