@@ -1,4 +1,4 @@
-from rapidapi.rapidapi_requests.hotels_request import get_hotels_json
+from rapidapi.rapidapi_requests.hotels_request import get_hotels_json, get_hotel_photos_json
 from utils.named_tuples import HotelInfo, ID, KM, Link, USD
 
 from datetime import date
@@ -42,8 +42,8 @@ def parse_hotels_info(results: list[dict], date_in: date, date_out: date) -> lis
             name=name,
             address=address,
             distance_from_center=correct_distance,
-            total_cost=total_price,
-            cost_by_night=price_by_night,
+            total_cost=round(total_price, 2),
+            cost_by_night=round(price_by_night, 2),
             photo=photo_link,
             coordinates=coordinates
         ))
@@ -63,3 +63,15 @@ def generate_address(info: dict) -> str:
     address_line = info.get('streetAddress')
 
     return f'{address_line}, {city}, {country}'
+
+
+async def get_hotel_photo_links(hotel_id: ID) -> list[Link]:
+    hotel_photos_json: dict = await get_hotel_photos_json(hotel_id)
+    hotel_images = hotel_photos_json.get('hotelImages')
+
+    if hotel_images is not None:
+
+        photo_links = [info.get('baseUrl').replace('{size}', 'y') for info in hotel_images]
+        return photo_links
+
+    return []
