@@ -1,8 +1,9 @@
-from aiogram.types.inline_keyboard import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram_bot_calendar import DetailedTelegramCalendar
 
 from datetime import datetime
-from typing import NamedTuple, Optional
+from typing import Optional
+
+from utils.named_tuples import CalendarMarkupAndStep
 
 
 CUSTOM_STEPS = {'y': 'год', 'm': 'месяц', 'd': 'день'}
@@ -12,6 +13,10 @@ NUMBERS_TO_MONTHS = {'01': 'января', '02': 'февраля', '03': 'мар
 
 
 class CustomCalendar(DetailedTelegramCalendar):
+    """
+    Calendar keyboard with user-friendly interface
+    """
+
     next_button = '➡️'
     prev_button = '⬅️'
 
@@ -19,12 +24,9 @@ class CustomCalendar(DetailedTelegramCalendar):
         super().__init__(locale='ru', min_date=min_date)
 
 
-class CalendarMarkupAndStep(NamedTuple):
-    calendar: InlineKeyboardMarkup
-    date_type: str
-
-
 def create_calendar(minimal_date: Optional[datetime] = None) -> CalendarMarkupAndStep:
+    """Creates a calendar and gets step of input"""
+
     if minimal_date is None:
         calendar, step = CustomCalendar().build()
     else:
@@ -34,7 +36,8 @@ def create_calendar(minimal_date: Optional[datetime] = None) -> CalendarMarkupAn
 
 
 def get_readble_date(str_date: str) -> str:
+    """Creates a written version of date from a date object string"""
+
     year, month, day = str_date.split('-')
 
     return f'{day.lstrip("0")}-е {NUMBERS_TO_MONTHS[month]} {year}-го года'
-

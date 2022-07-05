@@ -5,6 +5,8 @@ from datetime import date
 
 
 async def get_hotels_info(data: dict) -> list[HotelInfo]:
+    """Gets requiered info for request from state data. Calls parse hotels function"""
+
     command = data.get('command_type')
     sort_by = 'PRICE' if command == 'lowprice' else 'PRICE_HIGHEST_FIRST'
     date_in, date_out = data.get('date_in'), data.get('date_out')
@@ -19,6 +21,8 @@ async def get_hotels_info(data: dict) -> list[HotelInfo]:
 
 
 def parse_hotels_info(results: list[dict], date_in: date, date_out: date) -> list[HotelInfo]:
+    """Parses found info about each hotel. Returns list of information about each hotel"""
+
     hotels_info = list()
     for result in results:
         name: str = result.get('name')
@@ -52,12 +56,16 @@ def parse_hotels_info(results: list[dict], date_in: date, date_out: date) -> lis
 
 
 def distance_str_to_float_in_km(str_distance: str) -> float:
+    """Converts string distance in miles to float distance in km"""
+
     distance = str_distance.rstrip(' miles')
 
     return round(float(distance) * 1.609, 2)
 
 
 def generate_address(info: dict) -> str:
+    """Creates address string from address info"""
+
     country = info.get('countryName')
     city = info.get('locality')
     address_line = info.get('streetAddress')
@@ -66,6 +74,8 @@ def generate_address(info: dict) -> str:
 
 
 async def get_hotel_photo_links(hotel_id: ID) -> list[Link]:
+    """Gets list of hotel photo urls by id"""
+
     hotel_photos_json: dict = await get_hotel_photos_json(hotel_id)
     hotel_images = hotel_photos_json.get('hotelImages')
 

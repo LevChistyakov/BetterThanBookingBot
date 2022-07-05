@@ -6,6 +6,8 @@ from utils.named_tuples import ID
 
 
 async def get_hotels_json(destination_id: str, date_in: date, date_out: date, sort_by: str) -> dict:
+    """Sends search request to rapidapi by selected city id. Returns json of found hotels"""
+
     url = "https://hotels4.p.rapidapi.com/properties/list"
 
     querystring = {"destinationId": destination_id, "pageNumber": "1", "pageSize": "10", "checkIn": str(date_in),
@@ -22,6 +24,8 @@ async def get_hotels_json(destination_id: str, date_in: date, date_out: date, so
 
 
 async def get_hotel_photos_json(hotel_id: ID) -> dict:
+    """Sends search request to rapidapi by selected hotel id. Returns json of found photos"""
+
     url = "https://hotels4.p.rapidapi.com/properties/get-hotel-photos"
 
     querystring = {"id": str(hotel_id)}

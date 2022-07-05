@@ -3,6 +3,8 @@ from keyboards.inline.hotel_keyboards.hotel_keyboard import create_hotel_keyboar
 
 
 def create_hotel_message(hotel_info: HotelInfo) -> HotelMessage:
+    """Creates message from hotel info. Returns hotel photo, caption and inline buttons with actions for hotel"""
+
     text = f'<b>{hotel_info.name}</b>\n' \
            f'\tАдрес: {hotel_info.address}\n' \
            f'\tРасстояние до центра: {hotel_info.distance_from_center} км\n' \
@@ -12,4 +14,3 @@ def create_hotel_message(hotel_info: HotelInfo) -> HotelMessage:
     buttons = create_hotel_keyboard(info=hotel_info)
 
     return HotelMessage(text, hotel_info.photo, buttons)
-

@@ -6,6 +6,13 @@ from utils.named_tuples import HotelInfo, Degrees
 
 
 def create_hotel_keyboard(info: HotelInfo) -> InlineKeyboardMarkup:
+    """
+    Creates hotel keyboard with next buttons:
+    - Booking hotel
+    - Show on maps
+    - Get photos
+    """
+
     keyboard = InlineKeyboardMarkup(row_width=1)
 
     hotel_id = info.hotel_id
@@ -21,6 +28,12 @@ def create_hotel_keyboard(info: HotelInfo) -> InlineKeyboardMarkup:
 
 
 def create_map_keyboard(latitude: Degrees, longitude: Degrees) -> InlineKeyboardMarkup:
+    """
+    Creates map keyboard with next buttons:
+    - Show in Google Maps
+    - Show in Yandex Maps
+    """
+
     keyboard = InlineKeyboardMarkup(row_width=1)
 
     gmaps_link = f'http://maps.google.com/maps?q={latitude},{longitude}'
@@ -35,18 +48,10 @@ def create_map_keyboard(latitude: Degrees, longitude: Degrees) -> InlineKeyboard
     return keyboard
 
 
-# class CustomPaginator(InlineKeyboardPaginator):
-#     first_page_label = '{}<<'
-#     previous_page_label = '{}<'
-#     current_page_label = '-{}-'
-#     next_page_label = '>{}'
-#     last_page_label = '>>{}'
-
-
 def create_photos_keyboard(photos_amount: int, page: int = 1) -> InlineKeyboardMarkup:
+    """Creates keyboard of paginator by current page"""
+
     paginator = InlineKeyboardPaginator(photos_amount, current_page=page, data_pattern='get_photo{page}')
     paginator.add_after(InlineKeyboardButton(text='Закрыть', callback_data='close_message'))
 
     return paginator.markup
-
-

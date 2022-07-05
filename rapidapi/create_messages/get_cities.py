@@ -1,17 +1,15 @@
-from typing import NamedTuple, Optional
-from aiogram.types.inline_keyboard import InlineKeyboardMarkup
+from typing import Optional
+from utils.named_tuples import Cities
+
+from rapidapi.parse_responses.find_cities import find_cities
 
 from exceptions.rapidapi_exceptions import ResponseJsonException
-from rapidapi.parse_responses.find_cities import find_cities
 from keyboards.inline.city_keyboard.cities_keyboard import create_cities_markup
 
 
-class Cities(NamedTuple):
-    message: str
-    buttons: InlineKeyboardMarkup
-
-
 async def create_cities_message(city: str) -> Optional[Cities]:
+    """Creates message of found cities. Returns message text and inline buttons with cities"""
+
     try:
         found = await find_cities(city=city)
     except ResponseJsonException:

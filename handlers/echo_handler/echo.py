@@ -13,4 +13,6 @@ async def bot_echo(message: Message):
 
 @dp.callback_query_handler()
 async def call_echo(call: CallbackQuery):
+    """Takes callbacks that isn't catched anywhere. Usually used for debuging"""
+
     print(call.data)

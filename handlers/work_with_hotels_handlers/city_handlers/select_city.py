@@ -1,14 +1,23 @@
 from aiogram.types.message import Message
 from aiogram.dispatcher import FSMContext
 
+from rapidapi.create_messages.get_cities import create_cities_message
+
+from handlers.default_handlers.start import get_started
 from states.bot_states import SelectCity
 from utils.search_waiting import send_waiting_message, del_waiting_messages
-from rapidapi.create_messages.get_cities import create_cities_message
 from loader import dp
 
 
 @dp.message_handler(state=SelectCity.wait_city_name)
 async def get_cities_by_name(message: Message, state: FSMContext):
+    """
+    Takes city name from user and get request to rapidapi by name.
+
+    If cities are found, bot sends message with inline buttons to choose correct city
+    Else back to home menu
+    """
+
     city = message.text
     await state.update_data(city_name=city)
 
@@ -23,3 +32,4 @@ async def get_cities_by_name(message: Message, state: FSMContext):
     else:
         await message.answer(text='❗️<b>Городов с таким названием не найдено</b>')
         await state.finish()
+        await get_started(message)

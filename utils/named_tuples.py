@@ -1,5 +1,4 @@
 from typing import NamedTuple
-from datetime import date
 from aiogram.types.inline_keyboard import InlineKeyboardMarkup
 
 KM = float
@@ -9,6 +8,16 @@ ID = int
 Degrees = float
 Latitude = Degrees
 Longitude = Degrees
+
+
+class Cities(NamedTuple):
+    message: str
+    buttons: InlineKeyboardMarkup
+
+
+class CalendarMarkupAndStep(NamedTuple):
+    calendar: InlineKeyboardMarkup
+    date_type: str
 
 
 class HotelInfo(NamedTuple):
@@ -26,4 +35,3 @@ class HotelMessage(NamedTuple):
     text: str
     photo: Link
     buttons: InlineKeyboardMarkup
-
