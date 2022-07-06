@@ -1,3 +1,4 @@
-from . import default_heandlers
-from . import hello_heandlers
-from . import echo_heandler
+from . import default_handlers
+from . import action_handlers
+from . import work_with_hotels_handlers
+from . import echo_handler

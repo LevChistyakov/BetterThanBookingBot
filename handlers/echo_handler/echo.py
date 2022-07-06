@@ -1,4 +1,4 @@
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 
 from loader import dp
 
@@ -9,3 +9,10 @@ async def bot_echo(message: Message):
 
     await message.answer("Эхо без состояния или фильтра."
                          f"\nСообщение: {message.text}")
+
+
+@dp.callback_query_handler()
+async def call_echo(call: CallbackQuery):
+    """Takes callbacks that isn't catched anywhere. Usually used for debuging"""
+
+    print(call.data)
