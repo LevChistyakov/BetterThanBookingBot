@@ -105,38 +105,3 @@ async def send_confirmation_date(call: CallbackQuery, state: FSMContext):
                                   f'\n'
                                   f'<b>Все верно?</b>', reply_markup=is_correct_markup('city_info'))
         await GetHotels.is_info_correct.set()
-
-
-@dp.message_handler(state=SelectDates.start_select_date_in)
-async def send_warning(message: Message):
-    """Cathes undetected messages and sends warning to user"""
-
-    await message.answer('<b>Сообщение не распознано, бот ожидает нажатия на кнопку!</b>')
-
-
-@dp.message_handler(state=SelectDates.start_select_date_out)
-async def send_warning(message: Message):
-    """Cathes undetected messages and sends warning to user"""
-
-    await message.answer('<b>Сообщение не распознано, бот ожидает нажатия на кнопку!</b>')
-
-
-@dp.message_handler(state=SelectDates.select_date_in)
-async def send_warning(message: Message):
-    """Cathes undetected messages and sends warning to user"""
-
-    await message.answer('<b>Сообщение не распознано, бот ожидает нажатия на кнопку!</b>')
-
-
-@dp.message_handler(state=SelectDates.select_date_out)
-async def send_warning(message: Message):
-    """Cathes undetected messages and sends warning to user"""
-
-    await message.answer('<b>Сообщение не распознано, бот ожидает нажатия на кнопку!</b>')
-
-
-@dp.message_handler(state=SelectDates.is_date_correct)
-async def send_warning(message: Message):
-    """Cathes undetected messages and sends warning to user"""
-
-    await message.answer('<b>Сообщение не распознано, бот ожидает нажатия на кнопку!</b>')

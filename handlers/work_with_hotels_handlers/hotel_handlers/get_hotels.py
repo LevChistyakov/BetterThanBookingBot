@@ -7,6 +7,8 @@ from rapidapi.create_messages.get_hotel import create_hotel_message
 from states.bot_states import GetHotels, SelectCity
 from utils.named_tuples import HotelInfo
 from utils.search_waiting import send_waiting_message, del_waiting_messages
+from utils.work_with_errors import is_message_error, create_error_message
+
 from keyboards.reply.hotels_menu import show_more_hotels_keyboard
 from handlers.default_handlers.start import get_started
 from loader import dp, bot
@@ -26,7 +28,14 @@ async def find_hotels_if_info_correct(call: CallbackQuery, state: FSMContext):
         text_to_delete, sticker_to_delete = await send_waiting_message(message)
 
         state_data = await state.get_data()
+
         hotels_info: list[HotelInfo] = await get_hotels_info(data=state_data)
+        if is_message_error(message=hotels_info):
+            await message.answer(text=create_error_message(hotels_info.get('error')))
+            await state.finish()
+            await get_started(message)
+            return
+
         await state.update_data(hotels_info=hotels_info, hotel_index=1)
 
         hotel_info = hotels_info[0]
@@ -65,30 +74,9 @@ async def show_new_hotel(message: Message, state: FSMContext):
     await state.update_data(hotel_index=hotel_index + 1)
 
 
-@dp.callback_query_handler(lambda call: call.data == 'close_message', state=GetHotels.get_hotels_menu)
-async def close_message(call: CallbackQuery):
-    """Deletes message. Used for messages with maps or photos"""
-
-    await call.message.delete()
-
-
 @dp.message_handler(lambda message: message.text == 'Главное меню', state=GetHotels.get_hotels_menu)
 async def go_home(message: Message, state: FSMContext):
     """Ends the scenario. Returns to home menu"""
 
     await state.finish()
     await get_started(message)
-
-
-@dp.message_handler(state=GetHotels.is_info_correct)
-async def send_warning(message: Message):
-    """Cathes undetected messages and sends warning to user"""
-
-    await message.answer('<b>Сообщение не распознано, бот ожидает нажатия на кнопку!</b>')
-
-
-@dp.message_handler(state=GetHotels.get_hotels_menu)
-async def send_warning(message: Message):
-    """Cathes undetected messages and sends warning to user"""
-
-    await message.answer('<b>Сообщение не распознано, бот ожидает нажатия на кнопку!</b>')

@@ -19,10 +19,3 @@ async def set_city_id(call: CallbackQuery, state: FSMContext):
 
     await SelectDates.start_select_date_in.set()
     await start_select_date_in(call=call)
-
-
-@dp.message_handler(state=SelectCity.select_city)
-async def send_warning(message: Message):
-    """Cathes undetected messages and sends warning to user"""
-
-    await message.answer('<b>Сообщение не распознано, бот ожидает нажатия на кнопку!</b>')

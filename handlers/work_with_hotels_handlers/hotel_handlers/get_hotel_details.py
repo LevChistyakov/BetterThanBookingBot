@@ -6,12 +6,14 @@ from rapidapi.parse_responses.find_hotels import get_hotel_photo_links
 
 from utils.named_tuples import Link, ID
 from utils.search_waiting import send_waiting_message, del_waiting_messages
+from utils.work_with_errors import is_message_error, create_error_message
 from states.bot_states import GetHotels
+from handlers.default_handlers.start import get_started
 from keyboards.inline.hotel_keyboards.hotel_keyboard import create_map_keyboard, create_photos_keyboard
 from loader import dp, bot
 
 
-@dp.callback_query_handler(lambda call: call.data.startswith('get_hotel_map'), state=GetHotels.get_hotels_menu)
+@dp.callback_query_handler(lambda call: call.data.startswith('get_hotel_map'), state='*')
 async def get_hotel_map(call: CallbackQuery):
     """Sends hotel geoposition on map as telegram location object. Has two links to popular maps apps"""
 
@@ -20,7 +22,7 @@ async def get_hotel_map(call: CallbackQuery):
                             reply_markup=create_map_keyboard(latitude, longitude))
 
 
-@dp.callback_query_handler(lambda call: call.data.startswith('get_hotel_photos'), state=GetHotels.get_hotels_menu)
+@dp.callback_query_handler(lambda call: call.data.startswith('get_hotel_photos'), state='*')
 async def get_hotel_photos(call: CallbackQuery, state: FSMContext):
     """Searches photos of the hotel and sends first of them in paginator message"""
 
@@ -28,13 +30,18 @@ async def get_hotel_photos(call: CallbackQuery, state: FSMContext):
 
     hotel_id: ID = int(call.data.lstrip('get_hotel_photos'))
     photo_links: list[Link] = await get_hotel_photo_links(hotel_id)
+    if is_message_error(photo_links):
+        await call.message.answer(text=create_error_message(photo_links.get('error')))
+        await state.finish()
+        await get_started(call.message)
+
     await state.update_data(photos=photo_links)
 
     await del_waiting_messages(text_to_delete, sticker_to_delete)
     await send_hotel_photo(message=call.message, found_photos=photo_links)
 
 
-@dp.callback_query_handler(lambda call: call.data.startswith('get_photo'), state=GetHotels.get_hotels_menu)
+@dp.callback_query_handler(lambda call: call.data.startswith('get_photo'), state='*')
 async def show_hotel_photo(call: CallbackQuery, state: FSMContext):
     """Goes to next page with photo in paginator message"""
 
@@ -60,3 +67,10 @@ async def send_new_hotel_photo(message: Message, found_photos: list, photo_index
                                  message_id=message.message_id,
                                  media=InputMediaPhoto(found_photos[photo_index - 1]),
                                  reply_markup=create_photos_keyboard(len(found_photos), page=photo_index))
+
+
+@dp.callback_query_handler(lambda call: call.data == 'close_message', state='*')
+async def close_message(call: CallbackQuery):
+    """Deletes message. Used for messages with maps or photos"""
+
+    await call.message.delete()

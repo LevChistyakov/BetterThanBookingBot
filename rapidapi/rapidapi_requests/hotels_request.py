@@ -2,7 +2,11 @@ from rapidapi.rapidapi_requests.requests_to_api import request_to_api
 from config_data.config import RAPID_API_KEY
 
 from datetime import date
+from typing import Optional
 from utils.named_tuples import ID
+
+from aiohttp import ServerTimeoutError
+from exceptions.rapidapi_exceptions import ResponseIsEmptyError
 
 
 async def get_hotels_json(destination_id: str, date_in: date, date_out: date, sort_by: str) -> dict:
@@ -19,8 +23,14 @@ async def get_hotels_json(destination_id: str, date_in: date, date_out: date, so
         "X-RapidAPI-Host": "hotels4.p.rapidapi.com"
     }
 
-    cities_json = await request_to_api(url=url, headers=headers, querystring=querystring)
-    return cities_json
+    try:
+        hotels_json = await request_to_api(url=url, headers=headers, querystring=querystring)
+        if hotels_json is None:
+            raise ResponseIsEmptyError
+        return hotels_json
+
+    except ServerTimeoutError:
+        raise ServerTimeoutError
 
 
 async def get_hotel_photos_json(hotel_id: ID) -> dict:
@@ -31,9 +41,15 @@ async def get_hotel_photos_json(hotel_id: ID) -> dict:
     querystring = {"id": str(hotel_id)}
 
     headers = {
-        "X-RapidAPI-Key": "e97bb1eb49mshdf0aee915edc1c0p1345e0jsn199b602604ae",
+        "X-RapidAPI-Key": RAPID_API_KEY,
         "X-RapidAPI-Host": "hotels4.p.rapidapi.com"
     }
 
-    photos_json = await request_to_api(url=url, headers=headers, querystring=querystring)
-    return photos_json
+    try:
+        photos_json = await request_to_api(url=url, headers=headers, querystring=querystring)
+        if photos_json is None:
+            raise ResponseIsEmptyError
+        return photos_json
+
+    except ServerTimeoutError:
+        raise ServerTimeoutError

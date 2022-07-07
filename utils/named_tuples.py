@@ -10,7 +10,7 @@ Latitude = Degrees
 Longitude = Degrees
 
 
-class Cities(NamedTuple):
+class CitiesMessage(NamedTuple):
     message: str
     buttons: InlineKeyboardMarkup
 

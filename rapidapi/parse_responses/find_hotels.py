@@ -1,19 +1,30 @@
 from rapidapi.rapidapi_requests.hotels_request import get_hotels_json, get_hotel_photos_json
 from utils.named_tuples import HotelInfo, ID, KM, Link, USD
+from typing import Union
 
 from datetime import date
 
+from exceptions.rapidapi_exceptions import ResponseIsEmptyError
+from aiohttp import ServerTimeoutError
 
-async def get_hotels_info(data: dict) -> list[HotelInfo]:
+
+async def get_hotels_info(data: dict) -> Union[list[HotelInfo], dict]:
     """Gets requiered info for request from state data. Calls parse hotels function"""
 
     command = data.get('command_type')
     sort_by = 'PRICE' if command == 'lowprice' else 'PRICE_HIGHEST_FIRST'
     date_in, date_out = data.get('date_in'), data.get('date_out')
-    hotels_dict: dict = await get_hotels_json(destination_id=data.get('city_id'),
-                                              date_in=date_in,
-                                              date_out=date_out,
-                                              sort_by=sort_by)
+
+    try:
+        hotels_dict: dict = await get_hotels_json(destination_id=data.get('city_id'),
+                                                    date_in=date_in,
+                                                    date_out=date_out,
+                                                    sort_by=sort_by)
+    except ServerTimeoutError:
+        return {'error': 'timeout'}
+    except ResponseIsEmptyError:
+        return {'error': 'empty'}
+
     if hotels_dict.get('result') == 'OK':
         search_results: list = hotels_dict.get('data').get('body').get('searchResults').get('results')
 
@@ -73,10 +84,16 @@ def generate_address(info: dict) -> str:
     return f'{address_line}, {city}, {country}'
 
 
-async def get_hotel_photo_links(hotel_id: ID) -> list[Link]:
+async def get_hotel_photo_links(hotel_id: ID) -> Union[list[Link], dict]:
     """Gets list of hotel photo urls by id"""
 
-    hotel_photos_json: dict = await get_hotel_photos_json(hotel_id)
+    try:
+        hotel_photos_json: dict = await get_hotel_photos_json(hotel_id)
+    except ResponseIsEmptyError:
+        return {'error': 'empty'}
+    except ServerTimeoutError:
+        return {'error': 'timeout'}
+
     hotel_images = hotel_photos_json.get('hotelImages')
 
     if hotel_images is not None:

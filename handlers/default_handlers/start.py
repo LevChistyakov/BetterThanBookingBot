@@ -4,7 +4,7 @@ from keyboards.reply.hotels_menu import home_menu_keyboard
 from loader import dp
 
 
-@dp.message_handler(commands='start')
+@dp.message_handler(commands='start', state='*')
 async def get_started(message: Message):
     """Command starts the bot in a chat with a user"""
 
