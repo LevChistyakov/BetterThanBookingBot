@@ -34,6 +34,7 @@ async def get_hotel_photos(call: CallbackQuery, state: FSMContext):
         await call.message.answer(text=create_error_message(photo_links.get('error')))
         await state.finish()
         await get_started(call.message)
+        return
 
     await state.update_data(photos=photo_links)
 

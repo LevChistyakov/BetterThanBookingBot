@@ -1,5 +1,6 @@
 from aiogram.dispatcher import FSMContext
 from aiogram.types.callback_query import CallbackQuery, Message
+from aiogram.utils.exceptions import InvalidHTTPUrlContent, WrongFileIdentifier
 
 from rapidapi.parse_responses.find_hotels import get_hotels_info
 from rapidapi.create_messages.get_hotel import create_hotel_message
@@ -41,9 +42,15 @@ async def find_hotels_if_info_correct(call: CallbackQuery, state: FSMContext):
         hotel_info = hotels_info[0]
         hotel_message = create_hotel_message(hotel_info)
         await del_waiting_messages(text=text_to_delete, sticker=sticker_to_delete)
-        await message.answer('Найденные отели:', reply_markup=show_more_hotels_keyboard())
-        await bot.send_photo(chat_id=message.chat.id, photo=hotel_message.photo, caption=hotel_message.text,
-                             reply_markup=hotel_message.buttons)
+        await message.answer('<b>Найденные отели:</b>', reply_markup=show_more_hotels_keyboard())
+
+        try:
+            await bot.send_photo(chat_id=message.chat.id, photo=hotel_message.photo, caption=hotel_message.text,
+                                 reply_markup=hotel_message.buttons)
+        except InvalidHTTPUrlContent:
+            await message.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
+        except WrongFileIdentifier:
+            await message.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
 
         await GetHotels.get_hotels_menu.set()
 

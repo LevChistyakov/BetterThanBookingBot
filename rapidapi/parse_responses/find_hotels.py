@@ -42,6 +42,7 @@ def parse_hotels_info(results: list[dict], date_in: date, date_out: date) -> lis
 
         hotel_id: ID = result.get('id')
         photo_link: Link = result.get('optimizedThumbUrls').get('srpDesktop')
+        high_resolution_link: Link = photo_link.replace('250', '1280').replace('140', '720')
 
         distance_to_center = result.get('landmarks')[0].get('distance')
         correct_distance: KM = distance_str_to_float_in_km(str_distance=distance_to_center)
@@ -59,7 +60,7 @@ def parse_hotels_info(results: list[dict], date_in: date, date_out: date) -> lis
             distance_from_center=correct_distance,
             total_cost=round(total_price, 2),
             cost_by_night=round(price_by_night, 2),
-            photo=photo_link,
+            photo=high_resolution_link,
             coordinates=coordinates
         ))
 
