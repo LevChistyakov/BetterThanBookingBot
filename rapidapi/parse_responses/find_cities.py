@@ -1,5 +1,4 @@
 from exceptions.rapidapi_exceptions import ResponseIsEmptyError
-from aiohttp import ServerTimeoutError
 from rapidapi.rapidapi_requests.cities_request import get_cities_json
 
 
@@ -11,15 +10,16 @@ async def find_cities(city: str) -> dict:
 
     try:
         cities_dict: dict = await get_cities_json(city=city)
-    except ServerTimeoutError:
-        raise ServerTimeoutError
     except ResponseIsEmptyError:
-        raise ResponseIsEmptyError
+        return {'error': 'empty'}
+
+    if cities_dict.get('error') is not None:
+        return cities_dict
 
     city_suggestions: list = cities_dict.get('suggestions')
     city_entities: list = city_suggestions[0]['entities']
     if not city_entities:
-        return {}
+        return {'error': 'not_found'}
 
     cities_with_id = dict()
     for city_dict in city_entities:

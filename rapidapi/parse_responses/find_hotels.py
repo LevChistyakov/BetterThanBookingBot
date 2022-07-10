@@ -5,7 +5,6 @@ from typing import Union
 from datetime import date
 
 from exceptions.rapidapi_exceptions import ResponseIsEmptyError
-from aiohttp import ServerTimeoutError
 
 
 async def get_hotels_info(data: dict) -> Union[list[HotelInfo], dict]:
@@ -20,10 +19,11 @@ async def get_hotels_info(data: dict) -> Union[list[HotelInfo], dict]:
                                                     date_in=date_in,
                                                     date_out=date_out,
                                                     sort_by=sort_by)
-    except ServerTimeoutError:
-        return {'error': 'timeout'}
     except ResponseIsEmptyError:
         return {'error': 'empty'}
+
+    if hotels_dict.get('error') is not None:
+        return hotels_dict
 
     if hotels_dict.get('result') == 'OK':
         search_results: list = hotels_dict.get('data').get('body').get('searchResults').get('results')
@@ -92,8 +92,8 @@ async def get_hotel_photo_links(hotel_id: ID) -> Union[list[Link], dict]:
         hotel_photos_json: dict = await get_hotel_photos_json(hotel_id)
     except ResponseIsEmptyError:
         return {'error': 'empty'}
-    except ServerTimeoutError:
-        return {'error': 'timeout'}
+    if hotel_photos_json.get('error') is not None:
+        return hotel_photos_json
 
     hotel_images = hotel_photos_json.get('hotelImages')
 

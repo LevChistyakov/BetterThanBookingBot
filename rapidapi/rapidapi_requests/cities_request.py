@@ -1,5 +1,4 @@
 from rapidapi.rapidapi_requests.requests_to_api import request_to_api
-from aiohttp import ServerTimeoutError
 from exceptions.rapidapi_exceptions import ResponseIsEmptyError
 
 from config_data.config import headers
@@ -12,11 +11,8 @@ async def get_cities_json(city: str) -> dict:
 
     querystring = {"query": city, "locale": "ru_RU", "currency": "RUB"}
 
-    try:
-        cities_json = await request_to_api(url=url, headers=headers, querystring=querystring)
-        if cities_json is None:
-            raise ResponseIsEmptyError
-        return cities_json
+    cities_json = await request_to_api(url=url, headers=headers, querystring=querystring)
+    if cities_json is None:
+        raise ResponseIsEmptyError
 
-    except ServerTimeoutError:
-        raise ServerTimeoutError
+    return cities_json
