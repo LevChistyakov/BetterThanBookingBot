@@ -1,13 +1,13 @@
 from aiogram.types.message import Message
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Command
+from aiogram.dispatcher.filters import Command, Text
 from aiogram.types.reply_keyboard import ReplyKeyboardRemove
 
 from states.bot_states import SelectCity
 from loader import dp
 
 
-@dp.message_handler(Command(['lowprice', 'highprice']))
+@dp.message_handler(Command(['lowprice', 'highprice']), state='*')
 async def define_state(message: Message, state: FSMContext):
     """"Catches lowprice and higprice commands. Asks user for city name"""
 
@@ -18,7 +18,7 @@ async def define_state(message: Message, state: FSMContext):
     await state.update_data(command_type=command)
 
 
-@dp.message_handler(Command(['Топ недорогих отелей']), state='*')
+@dp.message_handler(Text(['Топ недорогих отелей']), state='*')
 async def show_lowprice(message: Message, state: FSMContext):
     """"Catches text about lowprice hotels. Asks user for city name"""
 
@@ -29,7 +29,7 @@ async def show_lowprice(message: Message, state: FSMContext):
     await state.update_data(command_type=command)
 
 
-@dp.message_handler(Command(['Топ дорогих отелей']), state='*')
+@dp.message_handler(Text(['Топ дорогих отелей']), state='*')
 async def show_highprice(message: Message, state: FSMContext):
     """"Catches text about highprice hotels. Asks user for city name"""
 
