@@ -1,7 +1,8 @@
 from aiogram.dispatcher import FSMContext
-from aiogram.types.callback_query import CallbackQuery, Message
+from aiogram.types.callback_query import CallbackQuery
 
-from handlers.work_with_hotels_handlers.date_handlers.date_select_callbacks import start_select_date_in
+from handlers.work_with_hotels_handlers.search_details_handlers.select_date import start_select_date_in
+from handlers.work_with_hotels_handlers.search_details_handlers.select_price_range import start_select_price_range
 
 from states.bot_states import SelectCity, SelectDates
 from loader import dp
@@ -16,6 +17,13 @@ async def set_city_id(call: CallbackQuery, state: FSMContext):
 
     await call.answer('Город выбран', show_alert=False)
     await call.message.edit_text('<b>🏙 Город выбран!</b>', reply_markup=None)
+
+    state_data = await state.get_data()
+    command = state_data.get('command_type')
+
+    if command == 'bestdeal':
+        await start_select_price_range(call, state=state)
+        return
 
     await SelectDates.start_select_date_in.set()
     await start_select_date_in(call=call)

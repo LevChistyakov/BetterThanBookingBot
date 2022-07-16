@@ -7,7 +7,7 @@ from states.bot_states import SelectCity
 from loader import dp
 
 
-@dp.message_handler(Command(['lowprice', 'highprice']), state='*')
+@dp.message_handler(Command(['lowprice', 'highprice', 'bestdeal']), state='*')
 async def define_state(message: Message, state: FSMContext):
     """"Catches lowprice and higprice commands. Asks user for city name"""
 

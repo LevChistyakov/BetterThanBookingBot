@@ -8,3 +8,8 @@ async def delete_message(message: Message):
     message_id: int = message.message_id
 
     await chat.delete_message(message_id=message_id)
+
+
+async def delete_errors_messages(message_list: list[Message]):
+    for message in message_list:
+        await message.delete()

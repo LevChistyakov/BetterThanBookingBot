@@ -20,3 +20,12 @@ class GetHotels(StatesGroup):
     is_info_correct = State()
     get_hotels_menu = State()
 
+
+class BestDeal(StatesGroup):
+    select_price_range = State()
+    wait_min_price = State()
+    wait_max_price = State()
+
+    select_distance_range = State()
+    wait_min_distance = State()
+    wait_max_distance = State()
