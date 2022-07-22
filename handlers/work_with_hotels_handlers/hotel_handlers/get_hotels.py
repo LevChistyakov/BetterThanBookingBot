@@ -25,34 +25,8 @@ async def find_hotels_if_info_correct(call: CallbackQuery, state: FSMContext):
 
     message = call.message
     if call.data == 'city_info_correct':
-        await message.delete()
-        text_to_delete, sticker_to_delete = await send_waiting_message(message)
-
-        state_data = await state.get_data()
-
-        hotels_info: list[HotelInfo] = await get_hotels_info(data=state_data)
-        if is_message_error(message=hotels_info):
-            await message.answer(text=create_error_message(hotels_info.get('error')))
-            await state.finish()
-            await get_started(message)
-            return
-
-        await state.update_data(hotels_info=hotels_info, hotel_index=1)
-
-        hotel_info = hotels_info[0]
-        hotel_message = create_hotel_message(hotel_info)
-        await del_waiting_messages(text=text_to_delete, sticker=sticker_to_delete)
-        await message.answer('<b>Найденные отели:</b>', reply_markup=show_more_hotels_keyboard())
-
-        try:
-            await bot.send_photo(chat_id=message.chat.id, photo=hotel_message.photo, caption=hotel_message.text,
-                                 reply_markup=hotel_message.buttons)
-        except InvalidHTTPUrlContent:
-            await message.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
-        except WrongFileIdentifier:
-            await message.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
-
-        await GetHotels.get_hotels_menu.set()
+        await state.update_data(hotels_page=1)
+        await send_first_hotel(message=message, state=state, page=1)
 
     elif call.data == 'city_info_incorrect':
         await call.answer('Укажите информацию заново', show_alert=True)
@@ -60,24 +34,61 @@ async def find_hotels_if_info_correct(call: CallbackQuery, state: FSMContext):
         await message.edit_text('<b>↘️ Отправьте боту город для поиска</b>')
 
 
+async def send_first_hotel(message: Message, state: FSMContext, page: int):
+    await message.delete()
+    text_to_delete, sticker_to_delete = await send_waiting_message(message)
+
+    state_data = await state.get_data()
+    hotels_info: list[HotelInfo] = await get_hotels_info(data=state_data, page=page)
+
+    if is_message_error(message=hotels_info):
+        await message.answer(text=create_error_message(hotels_info.get('error')))
+        await state.finish()
+        await del_waiting_messages(text_to_delete, sticker_to_delete)
+        await get_started(message)
+        return
+    await state.update_data(hotels_info=hotels_info, hotel_index=1)
+
+    hotel_info: HotelInfo = hotels_info[0]
+    # hotel_is_unique(hotel_id, last_hotel_id)
+    hotel_message = create_hotel_message(hotel_info)
+    await del_waiting_messages(text=text_to_delete, sticker=sticker_to_delete)
+    await message.answer('<b>Найденные отели:</b>', reply_markup=show_more_hotels_keyboard())
+
+    try:
+        await bot.send_photo(chat_id=message.chat.id, photo=hotel_message.photo, caption=hotel_message.text,
+                             reply_markup=hotel_message.buttons)
+    except InvalidHTTPUrlContent:
+        await message.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
+    except WrongFileIdentifier:
+        await message.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
+
+    await GetHotels.get_hotels_menu.set()
+
+
 @dp.message_handler(lambda message: message.text == 'Показать еще', state=GetHotels.get_hotels_menu)
-async def show_new_hotel(message: Message, state: FSMContext):
-    """Sends message about another one hotel"""
+async def send_new_hotel(message: Message, state: FSMContext):
+    """Sends message about another hotel"""
 
     state_data = await state.get_data()
 
-    hotel_index = state_data.get('hotel_index')
+    hotel_index, hotels_page = state_data.get('hotel_index'), state_data.get('hotels_page')
     hotels_info: list[HotelInfo] = state_data.get('hotels_info')
     if hotel_index == len(hotels_info):
-        await message.answer('На этом все!')
-        await get_started(message)
+        await send_first_hotel(message=message, state=state, page=hotels_page + 1)
+        await state.update_data(hotels_page=hotels_page + 1)
         return
 
     hotel = hotels_info[hotel_index]
     hotel_message = create_hotel_message(hotel_info=hotel)
 
-    await bot.send_photo(chat_id=message.chat.id, photo=hotel_message.photo, caption=hotel_message.text,
-                         reply_markup=hotel_message.buttons)
+    try:
+        await bot.send_photo(chat_id=message.chat.id, photo=hotel_message.photo, caption=hotel_message.text,
+                             reply_markup=hotel_message.buttons)
+    except InvalidHTTPUrlContent:
+        await message.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
+    except WrongFileIdentifier:
+        await message.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
     await state.update_data(hotel_index=hotel_index + 1)
 
 

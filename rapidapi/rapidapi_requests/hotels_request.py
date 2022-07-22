@@ -7,14 +7,32 @@ from utils.named_tuples import ID
 from exceptions.rapidapi_exceptions import ResponseIsEmptyError
 
 
-async def get_hotels_json(destination_id: str, date_in: date, date_out: date, sort_by: str) -> dict:
+async def get_hotels_json(destination_id: str, date_in: date, date_out: date, sort_by: str, page: int) -> dict:
     """Sends search request to rapidapi by selected city id. Returns json of found hotels"""
-    print(destination_id)
     url = "https://hotels4.p.rapidapi.com/properties/list"
 
-    querystring = {"destinationId": destination_id, "pageNumber": "1", "pageSize": "10", "checkIn": str(date_in),
-                   "checkOut": str(date_out), "adults1": "1", "sortOrder": sort_by, "locale": "en_US",
+    querystring = {"destinationId": destination_id, "pageNumber": str(page), "pageSize": "25",
+                   "checkIn": str(date_in), "checkOut": str(date_out), "adults1": "1",
+                   "sortOrder": sort_by, "locale": "en_US",
                    "currency": "USD", 'landmarkIds': 'City center'}
+
+    hotels_json = await request_to_api(url=url, headers=headers, querystring=querystring)
+    if hotels_json is None:
+        raise ResponseIsEmptyError
+
+    return hotels_json
+
+
+async def get_bestdeal_hotels_json(destination_id: str, date_in: date, date_out: date, page: int,
+                                   min_price: int, max_price: int) -> dict:
+    """Sends search request to rapidapi by selected city id. Returns json of found hotels"""
+    url = "https://hotels4.p.rapidapi.com/properties/list"
+
+    querystring = {"destinationId": destination_id, "pageNumber": str(page), "pageSize": "25",
+                   "checkIn": str(date_in), "checkOut": str(date_out), "adults1": "1",
+                   "priceMin": str(min_price), "priceMax": str(max_price), "sortOrder": "DISTANCE_FROM_LANDMARK",
+                   "locale": "en_US", "currency": "USD", "landmarkIds": "City center"}
+    print(querystring)
 
     hotels_json = await request_to_api(url=url, headers=headers, querystring=querystring)
     if hotels_json is None:

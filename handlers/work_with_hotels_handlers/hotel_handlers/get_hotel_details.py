@@ -7,7 +7,6 @@ from rapidapi.parse_responses.find_hotels import get_hotel_photo_links
 from utils.named_tuples import Link, ID
 from utils.search_waiting import send_waiting_message, del_waiting_messages
 from utils.work_with_errors import is_message_error, create_error_message
-from states.bot_states import GetHotels
 from handlers.default_handlers.start import get_started
 from keyboards.inline.hotel_keyboards.hotel_keyboard import create_map_keyboard, create_photos_keyboard
 from loader import dp, bot

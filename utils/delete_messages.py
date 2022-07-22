@@ -11,5 +11,7 @@ async def delete_message(message: Message):
 
 
 async def delete_errors_messages(message_list: list[Message]):
+    if message_list is None:
+        return
     for message in message_list:
         await message.delete()

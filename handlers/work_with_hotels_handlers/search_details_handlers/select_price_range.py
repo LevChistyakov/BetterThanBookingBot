@@ -31,7 +31,7 @@ async def get_min_price(message: Message, state: FSMContext):
     state_data = await state.get_data()
     errors: list[Message] = state_data.get('errors_messages')
     try:
-        price: USD = float(message.text)
+        price = int(message.text)
     except ValueError:
         error_message = await message.answer('<b>❗️Отправьте боту число!</b>')
         errors.extend([error_message, message])
@@ -75,7 +75,7 @@ async def get_max_price(message: Message, state: FSMContext):
     errors: list[Message] = state_data.get('errors_messages')
 
     try:
-        price: USD = float(message.text)
+        price = int(message.text)
     except ValueError:
         error_message = await message.answer('<b>Отправьте боту число!</b>')
         errors.extend([error_message, message])
@@ -104,18 +104,6 @@ async def get_max_price(message: Message, state: FSMContext):
     await BestDeal.select_price_range.set()
 
 
-@dp.callback_query_handler(lambda call: call.data == 'end_price_range', state=BestDeal.select_price_range)
-async def end_price_range_selecting(call: CallbackQuery, state: FSMContext):
-    state_data = await state.get_data()
-    if state_data.get('min_price') is None:
-        await state.update_data(min_price=0)
-    elif state_data.get('max_price') is None:
-        await state.update_data(max_price=1000)
-
-    await call.message.edit_text('<b>💲 Диапазон цен выбран!</b>')
-    await start_select_distance_range(call, state)
-
-
 async def edit_price_message(message_to_edit: Message, state: FSMContext):
     state_data = await state.get_data()
     min_price, max_price = state_data.get('min_price'), state_data.get('max_price')
@@ -132,3 +120,17 @@ async def edit_price_message(message_to_edit: Message, state: FSMContext):
                f'Максимальная цена: <b>{max_price} $</b>'
 
     await message_to_edit.edit_text(text=text, reply_markup=price_range_keyboard())
+
+
+@dp.callback_query_handler(lambda call: call.data == 'end_price_range', state=BestDeal.select_price_range)
+async def end_price_range_selecting(call: CallbackQuery, state: FSMContext):
+    state_data = await state.get_data()
+    if state_data.get('min_price') is None and state_data.get('max_price') is None:
+        await state.update_data(min_price=1, max_price=5000000)
+    elif state_data.get('min_price') is None:
+        await state.update_data(min_price=1)
+    elif state_data.get('max_price') is None:
+        await state.update_data(max_price=5000000)
+
+    await call.message.edit_text('<b>💲 Диапазон цен выбран!</b>')
+    await start_select_distance_range(call, state)
