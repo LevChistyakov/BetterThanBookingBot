@@ -20,4 +20,7 @@ class BadRapidapiResultError(BaseException):
 
 
 class HotelsNotFoundError(BaseException):
-    pass
+    """Results list is empty"""
+
+    def __str__(self):
+        return 'Results list is empty'

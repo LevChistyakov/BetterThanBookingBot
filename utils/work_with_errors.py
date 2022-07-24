@@ -1,3 +1,10 @@
+from aiogram.types.message import Message
+from aiogram.dispatcher import FSMContext
+
+from handlers.default_handlers.start import go_home
+from utils.search_waiting import del_waiting_messages
+
+
 def is_message_error(message) -> bool:
     """Checks is function returned dictionary with error"""
 
@@ -22,3 +29,12 @@ def create_error_message(error_text: str) -> str:
         return template.format('Найденные отели закончились')
     if error_text == 'bad_result':
         return template.format('Возникла ошибка при получении информации. Попробуйте еще раз')
+
+
+async def finish_with_error(message: Message, state: FSMContext, error: str, to_delete: tuple[Message, Message] = None):
+    """Sends to user message about error and ends the scenario"""
+
+    await message.answer(text=create_error_message(error))
+    if to_delete is not None:
+        await del_waiting_messages(*to_delete)
+    await go_home(message, state)

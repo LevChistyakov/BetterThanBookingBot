@@ -10,6 +10,8 @@ from loader import dp
 
 
 async def start_select_price_range(call: CallbackQuery, state: FSMContext):
+    """Starts the price selection process"""
+
     await state.update_data(min_price=None, max_price=None)
     await BestDeal.select_price_range.set()
     await call.message.answer('<b>Укажите диапазон цены за ночь</b>', reply_markup=price_range_keyboard())
@@ -17,6 +19,8 @@ async def start_select_price_range(call: CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(lambda call: call.data == 'select_min_price', state=BestDeal.select_price_range)
 async def send_min_price_request(call: CallbackQuery, state: FSMContext):
+    """Asks the user for the minimal price per night"""
+
     message = await call.message.answer('<b>Отправьте минимальную цену в $</b>\n'
                                         'Пример: <b>100</b> или <b>50.25</b>')
     await state.update_data(message_to_delete=message)
@@ -27,6 +31,8 @@ async def send_min_price_request(call: CallbackQuery, state: FSMContext):
 
 @dp.message_handler(state=BestDeal.wait_min_price)
 async def get_min_price(message: Message, state: FSMContext):
+    """Gets minimal price and checks it"""
+
     state_data = await state.get_data()
     errors: list[Message] = state_data.get('errors_messages')
     try:
@@ -61,6 +67,8 @@ async def get_min_price(message: Message, state: FSMContext):
 
 @dp.callback_query_handler(lambda call: call.data == 'select_max_price', state=BestDeal.select_price_range)
 async def send_max_price_request(call: CallbackQuery, state: FSMContext):
+    """Asks the user for the maximum price per night"""
+
     message = await call.message.answer('<b>Отправьте максимальную цену в $</b>\n'
                                         'Пример: <b>100</b> или <b>50.25</b>')
     await state.update_data(message_to_delete=message)
@@ -70,6 +78,8 @@ async def send_max_price_request(call: CallbackQuery, state: FSMContext):
 
 @dp.message_handler(state=BestDeal.wait_max_price)
 async def get_max_price(message: Message, state: FSMContext):
+    """Gets maximum price and checks it"""
+
     state_data = await state.get_data()
     errors: list[Message] = state_data.get('errors_messages')
 
@@ -104,18 +114,20 @@ async def get_max_price(message: Message, state: FSMContext):
 
 
 async def edit_price_message(message_to_edit: Message, state: FSMContext):
+    """Edits message with info about price range"""
+
     state_data = await state.get_data()
     min_price, max_price = state_data.get('min_price'), state_data.get('max_price')
 
-    if min_price is not None and max_price is not None:
-        text = f'<b>Укажите диапазон цены за ночь</b>\n' \
-               f'Минимальная цена: <b>{min_price} $</b>\n' \
-               f'Максимальная цена: <b>{max_price} $</b>'
-    elif max_price is None:
+    if max_price is None:
         text = f'<b>Укажите диапазон цены за ночь</b>\n' \
                f'Минимальная цена: <b>{min_price} $</b>'
     elif min_price is None:
         text = f'<b>Укажите диапазон цены за ночь</b>\n' \
+               f'Максимальная цена: <b>{max_price} $</b>'
+    else:
+        text = f'<b>Укажите диапазон цены за ночь</b>\n' \
+               f'Минимальная цена: <b>{min_price} $</b>\n' \
                f'Максимальная цена: <b>{max_price} $</b>'
 
     await message_to_edit.edit_text(text=text, reply_markup=price_range_keyboard())
@@ -123,6 +135,8 @@ async def edit_price_message(message_to_edit: Message, state: FSMContext):
 
 @dp.callback_query_handler(lambda call: call.data == 'end_price_range', state=BestDeal.select_price_range)
 async def end_price_range_selecting(call: CallbackQuery, state: FSMContext):
+    """Ends the price selecting process"""
+
     state_data = await state.get_data()
     if state_data.get('min_price') is None and state_data.get('max_price') is None:
         await state.update_data(min_price=1, max_price=5000000)

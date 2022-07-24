@@ -2,6 +2,8 @@ from aiogram.types.inline_keyboard import InlineKeyboardMarkup, InlineKeyboardBu
 
 
 def price_range_keyboard():
+    """Creates inline keyboard for price range selecting"""
+
     keyboard = InlineKeyboardMarkup(row_width=1)
 
     min_price_button = InlineKeyboardButton('➖ Указать от скольки', callback_data='select_min_price')
@@ -13,6 +15,8 @@ def price_range_keyboard():
 
 
 def distance_range_keyboard():
+    """Creates inline keyboard for distance selecting"""
+
     keyboard = InlineKeyboardMarkup(row_width=1)
 
     max_distance_button = InlineKeyboardButton('➕ Указать расстояние', callback_data='select_max_distance')

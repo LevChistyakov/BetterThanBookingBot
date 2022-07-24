@@ -19,7 +19,7 @@ async def find_cities(city: str) -> dict:
     city_suggestions: list = cities_dict.get('suggestions')
     city_entities: list = city_suggestions[0]['entities']
     if not city_entities:
-        return {'error': 'not_found'}
+        return {'error': 'cities_not_found'}
 
     cities_with_id = dict()
     for city_dict in city_entities:

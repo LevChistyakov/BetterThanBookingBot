@@ -15,7 +15,6 @@ async def define_state(message: Message, state: FSMContext):
     await SelectCity.wait_city_name.set()
 
     command = message.text.lstrip('/')
-    await state.reset_data()
     await state.update_data(command_type=command)
 
 
@@ -27,7 +26,6 @@ async def show_lowprice(message: Message, state: FSMContext):
     await SelectCity.wait_city_name.set()
 
     command = 'lowprice'
-    await state.reset_data()
     await state.update_data(command_type=command)
 
 
@@ -39,5 +37,15 @@ async def show_highprice(message: Message, state: FSMContext):
     await SelectCity.wait_city_name.set()
 
     command = 'highprice'
-    await state.reset_data()
+    await state.update_data(command_type=command)
+
+
+@dp.message_handler(Text(['Поиск с параметрами']), state='*')
+async def show_highprice(message: Message, state: FSMContext):
+    """"Catches text about hotels with best deal. Asks user for city name"""
+
+    await message.answer('<b>↘️ Отправьте боту город для поиска</b>', reply_markup=ReplyKeyboardRemove())
+    await SelectCity.wait_city_name.set()
+
+    command = 'bestdeal'
     await state.update_data(command_type=command)

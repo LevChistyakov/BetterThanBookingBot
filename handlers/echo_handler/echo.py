@@ -1,5 +1,4 @@
 from aiogram.types import Message, CallbackQuery
-from aiogram.dispatcher import FSMContext
 
 from loader import dp
 
@@ -20,7 +19,7 @@ async def call_echo(call: CallbackQuery):
 
 
 @dp.message_handler(state='*')
-async def send_warning(message: Message, state: FSMContext):
+async def send_warning(message: Message):
     """Cathes undetected messages and sends warning to user"""
 
     await message.answer('<b>Сообщение не распознано, бот ожидает нажатия на кнопку!</b>')

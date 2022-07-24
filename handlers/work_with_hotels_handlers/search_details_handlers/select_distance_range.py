@@ -11,6 +11,8 @@ from loader import dp
 
 
 async def start_select_distance_range(call, state):
+    """Starts the distance selection process"""
+
     await state.update_data(max_distance=None)
     await BestDeal.select_distance_range.set()
     await call.message.answer('<b>Укажите максимальную удаленность от центра</b>',
@@ -19,6 +21,8 @@ async def start_select_distance_range(call, state):
 
 @dp.callback_query_handler(lambda call: call.data == 'select_max_distance', state=BestDeal.select_distance_range)
 async def send_max_distance_request(call: CallbackQuery, state: FSMContext):
+    """Asks the user for the maximum distance from the center"""
+
     message = await call.message.answer('<b>Отправьте максимальную удаленность от центра в Км</b>\n'
                                         'Пример: <b>5</b> или <b>10.5</b>')
     await state.update_data(message_to_delete=message)
@@ -29,6 +33,8 @@ async def send_max_distance_request(call: CallbackQuery, state: FSMContext):
 
 @dp.message_handler(state=BestDeal.wait_max_distance)
 async def get_max_distance(message: Message, state: FSMContext):
+    """Gets maximum distance and checks it"""
+
     state_data = await state.get_data()
     errors: list[Message] = state_data.get('errors_messages')
     try:
@@ -54,6 +60,8 @@ async def get_max_distance(message: Message, state: FSMContext):
 
 
 async def edit_distance_message(message_to_edit: Message, state: FSMContext):
+    """Edits message with info about maximum distance"""
+
     state_data = await state.get_data()
     max_distance = state_data.get('max_distance')
 
@@ -65,6 +73,8 @@ async def edit_distance_message(message_to_edit: Message, state: FSMContext):
 
 @dp.callback_query_handler(lambda call: call.data == 'end_distance_range', state=BestDeal.select_distance_range)
 async def end_distance_range_selecting(call: CallbackQuery, state: FSMContext):
+    """Ends the distance selecting process"""
+
     state_data = await state.get_data()
 
     if state_data.get('max_distance') is None:

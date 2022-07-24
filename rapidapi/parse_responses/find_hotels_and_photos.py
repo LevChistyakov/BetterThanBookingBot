@@ -5,7 +5,6 @@ from .get_results import get_hotels_dict, get_bestdeal_hotels_dict, trying_to_ge
 
 from utils.named_tuples import HotelInfo, ID, KM, Link, USD
 from typing import Union
-
 from datetime import date
 
 from exceptions.rapidapi_exceptions import ResponseIsEmptyError, BadRapidapiResultError, \

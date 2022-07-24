@@ -7,9 +7,10 @@ def home_menu_keyboard() -> ReplyKeyboardMarkup:
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     lopwrice_button = KeyboardButton('Топ недорогих отелей')
     highprice_button = KeyboardButton('Топ дорогих отелей')
+    bestdeal_button = KeyboardButton('Поиск с параметрами')
     help_button = KeyboardButton('Справка')
 
-    keyboard.add(lopwrice_button, highprice_button, help_button)
+    keyboard.add(lopwrice_button, highprice_button, bestdeal_button, help_button)
 
     return keyboard
 

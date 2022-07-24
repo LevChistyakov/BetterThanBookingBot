@@ -3,11 +3,11 @@ from aiogram.dispatcher import FSMContext
 
 from rapidapi.create_messages.get_cities import create_cities_message
 
-from handlers.default_handlers.start import get_started
+from handlers.work_with_hotels_handlers.hotel_handlers.get_hotels import finish_with_error
+
 from states.bot_states import SelectCity
-from utils.named_tuples import CitiesMessage
 from utils.search_waiting import send_waiting_message, del_waiting_messages
-from utils.work_with_errors import is_message_error, create_error_message
+from utils.work_with_errors import is_message_error
 from loader import dp
 
 
@@ -27,11 +27,9 @@ async def get_cities_by_name(message: Message, state: FSMContext):
     cities_message = await create_cities_message(city)
     await del_waiting_messages(text=text_to_delete, sticker=sticker_to_delete)
 
-    if not is_message_error(cities_message):
+    if is_message_error(cities_message):
+        await finish_with_error(message=message, state=state, error=cities_message.get('error'))
+    else:
         text, buttons = cities_message
         await message.answer(text, reply_markup=buttons)
         await SelectCity.select_city.set()
-    else:
-        await message.answer(text=create_error_message(cities_message.get('error')))
-        await state.finish()
-        await get_started(message)

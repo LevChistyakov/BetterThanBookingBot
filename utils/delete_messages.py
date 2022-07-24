@@ -11,6 +11,8 @@ async def delete_message(message: Message):
 
 
 async def delete_errors_messages(message_list: list[Message]):
+    """Deletes messages with errors while user selecting something in bestdeal scenario"""
+
     if message_list is None:
         return
     for message in message_list:

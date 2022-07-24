@@ -2,12 +2,12 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types.input_media import InputMediaPhoto
 from aiogram.types.callback_query import CallbackQuery, Message
 
-from rapidapi.parse_responses.find_hotels import get_hotel_photo_links
+from rapidapi.parse_responses.find_hotels_and_photos import get_hotel_photo_links
 
 from utils.named_tuples import Link, ID
 from utils.search_waiting import send_waiting_message, del_waiting_messages
-from utils.work_with_errors import is_message_error, create_error_message
-from handlers.default_handlers.start import get_started
+from utils.work_with_errors import is_message_error, finish_with_error
+
 from keyboards.inline.hotel_keyboards.hotel_keyboard import create_map_keyboard, create_photos_keyboard
 from loader import dp, bot
 
@@ -30,9 +30,8 @@ async def get_hotel_photos(call: CallbackQuery, state: FSMContext):
     hotel_id: ID = int(call.data.lstrip('get_hotel_photos'))
     photo_links: list[Link] = await get_hotel_photo_links(hotel_id)
     if is_message_error(photo_links):
-        await call.message.answer(text=create_error_message(photo_links.get('error')))
-        await state.finish()
-        await get_started(call.message)
+        await finish_with_error(call.message, state,
+                                error=photo_links.get('error'), to_delete=(text_to_delete, sticker_to_delete))
         return
 
     await state.update_data(photos=photo_links)

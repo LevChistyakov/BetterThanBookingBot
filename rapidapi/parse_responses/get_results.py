@@ -6,6 +6,8 @@ from utils.named_tuples import KM
 
 
 async def get_hotels_dict(command: str, data: dict, page: int) -> dict:
+    """Gets hotels dict from rapidapi"""
+
     sort_by = 'PRICE' if command == 'lowprice' else 'PRICE_HIGHEST_FIRST'
     date_in, date_out = data.get('date_in'), data.get('date_out')
 
@@ -20,6 +22,8 @@ async def get_hotels_dict(command: str, data: dict, page: int) -> dict:
 
 
 async def get_bestdeal_hotels_dict(data: dict, page: int):
+    """Gets hotels dictionary from rapidapi with user parametrs in request"""
+
     min_price, max_price = data.get('min_price'), data.get('max_price')
     date_in, date_out = data.get('date_in'), data.get('date_out')
 
@@ -33,6 +37,8 @@ async def get_bestdeal_hotels_dict(data: dict, page: int):
 
 
 def trying_to_get_results(hotels: dict) -> list:
+    """Tries to get results from dictionary with hotels info"""
+
     if hotels.get('result') == 'OK':
         search_results: dict = hotels.get('data').get('body').get('searchResults')
 
@@ -43,7 +49,14 @@ def trying_to_get_results(hotels: dict) -> list:
 
 
 def trying_to_get_bestdeal_results(hotels: dict, max_distance: int) -> list:
+    """Tries to get results that from dictionary with info about matching hotels"""
+
     results = trying_to_get_results(hotels=hotels)
+    return slice_hotels_results_by_max(results=results, max_distance=max_distance)
+
+
+def slice_hotels_results_by_max(results: list, max_distance: int):
+    """Slices hotels properties up to hotel with maximum distance"""
 
     index = len(results) - 1
     while index >= 0:

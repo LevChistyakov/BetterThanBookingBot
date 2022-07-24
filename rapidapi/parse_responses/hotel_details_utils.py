@@ -17,5 +17,6 @@ def generate_address(info: dict) -> str:
 
 
 def is_last_page(hotels: list) -> bool:
-    return True if 0 < len(hotels) < 25 else False
+    """Checks if page is last of search"""
 
+    return True if 0 < len(hotels) < 25 else False

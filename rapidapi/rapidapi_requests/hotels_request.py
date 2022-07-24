@@ -25,7 +25,8 @@ async def get_hotels_json(destination_id: str, date_in: date, date_out: date, so
 
 async def get_bestdeal_hotels_json(destination_id: str, date_in: date, date_out: date, page: int,
                                    min_price: int, max_price: int) -> dict:
-    """Sends search request to rapidapi by selected city id. Returns json of found hotels"""
+    """Sends search request with user parametrs to rapidapi by selected city id. Returns json of found hotels"""
+
     url = "https://hotels4.p.rapidapi.com/properties/list"
 
     querystring = {"destinationId": destination_id, "pageNumber": str(page), "pageSize": "25",
