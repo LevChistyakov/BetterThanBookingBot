@@ -3,7 +3,7 @@ from aiogram.types.message import Message
 from utils.delete_messages import delete_message
 
 
-async def send_waiting_message(message: Message):
+async def send_waiting_message(message: Message) -> tuple[Message, Message]:
     """
     Sends waiting messages (text and sticker) when bot requests to api.
     Returns sended messages to delete them in future

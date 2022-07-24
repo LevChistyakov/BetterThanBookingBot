@@ -3,16 +3,17 @@ from aiogram.types.callback_query import CallbackQuery, Message
 from aiogram.utils.exceptions import InvalidHTTPUrlContent, WrongFileIdentifier
 
 from rapidapi.parse_responses.find_hotels import get_hotels_info
+from rapidapi.parse_responses.hotel_details_utils import is_last_page
 from rapidapi.create_messages.get_hotel import create_hotel_message
 
 from states.bot_states import GetHotels, SelectCity
-from utils.named_tuples import HotelInfo
+from utils.named_tuples import HotelInfo, HotelMessage
 from utils.search_waiting import send_waiting_message, del_waiting_messages
 from utils.work_with_errors import is_message_error, create_error_message
 
 from keyboards.reply.hotels_menu import show_more_hotels_keyboard
 from handlers.default_handlers.start import get_started
-from loader import dp, bot
+from loader import dp
 
 
 @dp.callback_query_handler(lambda call: call.data.startswith('city_info_'), state=GetHotels.is_info_correct)
@@ -39,30 +40,26 @@ async def send_first_hotel(message: Message, state: FSMContext, page: int):
     text_to_delete, sticker_to_delete = await send_waiting_message(message)
 
     state_data = await state.get_data()
-    hotels_info: list[HotelInfo] = await get_hotels_info(data=state_data, page=page)
-
-    if is_message_error(message=hotels_info):
-        await message.answer(text=create_error_message(hotels_info.get('error')))
-        await state.finish()
-        await del_waiting_messages(text_to_delete, sticker_to_delete)
-        await get_started(message)
+    if state_data.get('last_page'):
+        await finish_with_error(message, state, error='page_index', to_delete=(text_to_delete, sticker_to_delete))
         return
-    await state.update_data(hotels_info=hotels_info, hotel_index=1)
 
+    hotels_info: list[HotelInfo] = await get_hotels_info(data=state_data, page=page)
+    if is_message_error(message=hotels_info):
+        error = hotels_info.get('error')
+        await finish_with_error(message, state, error=error, to_delete=(text_to_delete, sticker_to_delete))
+        return
+
+    await state.update_data(hotels_info=hotels_info, hotel_index=1)
     hotel_info: HotelInfo = hotels_info[0]
-    # hotel_is_unique(hotel_id, last_hotel_id)
     hotel_message = create_hotel_message(hotel_info)
+
     await del_waiting_messages(text=text_to_delete, sticker=sticker_to_delete)
     await message.answer('<b>Найденные отели:</b>', reply_markup=show_more_hotels_keyboard())
+    await trying_to_send_with_photo(message_from_user=message, hotel_message=hotel_message)
 
-    try:
-        await bot.send_photo(chat_id=message.chat.id, photo=hotel_message.photo, caption=hotel_message.text,
-                             reply_markup=hotel_message.buttons)
-    except InvalidHTTPUrlContent:
-        await message.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
-    except WrongFileIdentifier:
-        await message.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
-
+    if is_last_page(hotels_info):
+        await state.update_data(last_page=True)
     await GetHotels.get_hotels_menu.set()
 
 
@@ -80,15 +77,9 @@ async def send_new_hotel(message: Message, state: FSMContext):
         return
 
     hotel = hotels_info[hotel_index]
-    hotel_message = create_hotel_message(hotel_info=hotel)
+    hotel_message: HotelMessage = create_hotel_message(hotel_info=hotel)
 
-    try:
-        await bot.send_photo(chat_id=message.chat.id, photo=hotel_message.photo, caption=hotel_message.text,
-                             reply_markup=hotel_message.buttons)
-    except InvalidHTTPUrlContent:
-        await message.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
-    except WrongFileIdentifier:
-        await message.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
+    await trying_to_send_with_photo(message_from_user=message, hotel_message=hotel_message)
     await state.update_data(hotel_index=hotel_index + 1)
 
 
@@ -98,3 +89,20 @@ async def go_home(message: Message, state: FSMContext):
 
     await state.finish()
     await get_started(message)
+
+
+async def finish_with_error(message: Message, state: FSMContext, error: str, to_delete: tuple[Message, Message]):
+    await message.answer(text=create_error_message(error))
+    await del_waiting_messages(*to_delete)
+    await go_home(message, state)
+
+
+async def trying_to_send_with_photo(message_from_user: Message, hotel_message: HotelMessage):
+    try:
+        await message_from_user.bot.send_photo(chat_id=message_from_user.chat.id, photo=hotel_message.photo,
+                                               caption=hotel_message.text,
+                                               reply_markup=hotel_message.buttons)
+    except InvalidHTTPUrlContent:
+        await message_from_user.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
+    except WrongFileIdentifier:
+        await message_from_user.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)

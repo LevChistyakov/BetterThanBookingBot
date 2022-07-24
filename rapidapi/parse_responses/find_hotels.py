@@ -1,15 +1,15 @@
-from rapidapi.rapidapi_requests.hotels_request import get_hotels_json, get_hotel_photos_json
+from rapidapi.rapidapi_requests.hotels_request import get_hotel_photos_json
 from .hotel_details_utils import distance_str_to_float_in_km, generate_address
-from .bestdeal_utils import get_bestdeal_hotels_dict, trying_to_get_bestdeal_results
+from .get_results import get_hotels_dict, get_bestdeal_hotels_dict, trying_to_get_bestdeal_results, \
+    trying_to_get_results
 
 from utils.named_tuples import HotelInfo, ID, KM, Link, USD
 from typing import Union
 
 from datetime import date
-import math
 
-from exceptions.rapidapi_exceptions import ResponseIsEmptyError, PageIndexError, BadRapidapiResultError, \
-    BestDealHotelsNotFoundError
+from exceptions.rapidapi_exceptions import ResponseIsEmptyError, BadRapidapiResultError, \
+    HotelsNotFoundError
 
 
 async def get_hotels_info(data: dict, page: int) -> Union[list[HotelInfo], dict]:
@@ -27,45 +27,16 @@ async def get_hotels_info(data: dict, page: int) -> Union[list[HotelInfo], dict]
         date_in, date_out = data.get('date_in'), data.get('date_out')
 
         if command == 'bestdeal':
-            results = trying_to_get_bestdeal_results(hotels=hotels_dict, max_distance=data.get('max_distance'),
-                                                     page=page)
+            results = trying_to_get_bestdeal_results(hotels=hotels_dict, max_distance=data.get('max_distance'))
         else:
-            results = trying_to_get_results(hotels=hotels_dict, page=page)
+            results = trying_to_get_results(hotels=hotels_dict)
 
         return parse_hotels_info(results=results, date_in=date_in, date_out=date_out)
-    except BestDealHotelsNotFoundError:
+
+    except HotelsNotFoundError:
         return {'error': 'hotels_not_found'}
-    except PageIndexError:
-        return {'error': 'page_index'}
     except BadRapidapiResultError:
         return {'error': 'bad_result'}
-
-
-async def get_hotels_dict(command: str, data: dict, page: int) -> dict:
-    sort_by = 'PRICE' if command == 'lowprice' else 'PRICE_HIGHEST_FIRST'
-    date_in, date_out = data.get('date_in'), data.get('date_out')
-
-    try:
-        hotels_dict: dict = await get_hotels_json(destination_id=data.get('city_id'),
-                                                  date_in=date_in, date_out=date_out,
-                                                  sort_by=sort_by, page=page)
-        return hotels_dict
-    except ResponseIsEmptyError:
-        return {'error': 'empty'}
-
-
-def trying_to_get_results(hotels: dict, page: int) -> list:
-    if hotels.get('result') == 'OK':
-        search_results: dict = hotels.get('data').get('body').get('searchResults')
-        total_count: int = search_results.get('totalCount')
-        pages_amount = math.ceil(total_count / 25)
-        if page > pages_amount:
-            raise PageIndexError
-
-        results: list = search_results.get('results')
-        return results
-
-    raise BadRapidapiResultError
 
 
 def parse_hotels_info(results: list[dict], date_in: date, date_out: date) -> list[HotelInfo]:
@@ -109,8 +80,10 @@ async def get_hotel_photo_links(hotel_id: ID) -> Union[list[Link], dict]:
 
     try:
         hotel_photos_json: dict = await get_hotel_photos_json(hotel_id)
+
     except ResponseIsEmptyError:
         return {'error': 'empty'}
+
     if hotel_photos_json.get('error') is not None:
         return hotel_photos_json
 

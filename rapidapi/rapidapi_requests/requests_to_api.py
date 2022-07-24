@@ -1,4 +1,5 @@
 from aiohttp import ClientSession, ClientTimeout, ServerTimeoutError
+from asyncio.exceptions import TimeoutError
 
 
 async def request_to_api(url: str, headers: dict, querystring: dict) -> dict:
@@ -14,4 +15,6 @@ async def request_to_api(url: str, headers: dict, querystring: dict) -> dict:
                     return response_json
 
     except ServerTimeoutError:
+        return {'error': 'timeout'}
+    except TimeoutError:
         return {'error': 'timeout'}

@@ -15,6 +15,7 @@ async def define_state(message: Message, state: FSMContext):
     await SelectCity.wait_city_name.set()
 
     command = message.text.lstrip('/')
+    await state.reset_data()
     await state.update_data(command_type=command)
 
 
@@ -26,6 +27,7 @@ async def show_lowprice(message: Message, state: FSMContext):
     await SelectCity.wait_city_name.set()
 
     command = 'lowprice'
+    await state.reset_data()
     await state.update_data(command_type=command)
 
 
@@ -37,4 +39,5 @@ async def show_highprice(message: Message, state: FSMContext):
     await SelectCity.wait_city_name.set()
 
     command = 'highprice'
+    await state.reset_data()
     await state.update_data(command_type=command)

@@ -19,5 +19,5 @@ class BadRapidapiResultError(BaseException):
         return 'Request parametr "result" is not OK'
 
 
-class BestDealHotelsNotFoundError(BaseException):
+class HotelsNotFoundError(BaseException):
     pass

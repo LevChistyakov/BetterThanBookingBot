@@ -3,7 +3,6 @@ from aiogram.dispatcher import FSMContext
 
 from keyboards.inline.bestdeal.select_keyboards import price_range_keyboard
 from states.bot_states import BestDeal
-from utils.named_tuples import USD
 
 from .select_distance_range import start_select_distance_range
 from utils.delete_messages import delete_errors_messages

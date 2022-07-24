@@ -32,7 +32,6 @@ async def get_bestdeal_hotels_json(destination_id: str, date_in: date, date_out:
                    "checkIn": str(date_in), "checkOut": str(date_out), "adults1": "1",
                    "priceMin": str(min_price), "priceMax": str(max_price), "sortOrder": "DISTANCE_FROM_LANDMARK",
                    "locale": "en_US", "currency": "USD", "landmarkIds": "City center"}
-    print(querystring)
 
     hotels_json = await request_to_api(url=url, headers=headers, querystring=querystring)
     if hotels_json is None:
