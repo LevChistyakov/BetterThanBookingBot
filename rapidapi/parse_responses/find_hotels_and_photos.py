@@ -1,5 +1,5 @@
 from rapidapi.rapidapi_requests.hotels_request import get_hotel_photos_json
-from .hotel_details_utils import distance_str_to_float_in_km, generate_address
+from .hotel_details_utils import distance_str_to_float_in_km, generate_address, trying_to_get_link
 from .get_results import get_hotels_dict, get_bestdeal_hotels_dict, trying_to_get_bestdeal_results, \
     trying_to_get_results
 
@@ -48,8 +48,7 @@ def parse_hotels_info(results: list[dict], date_in: date, date_out: date) -> lis
         address: str = generate_address(info=address_info)
 
         hotel_id: ID = result.get('id')
-        photo_link: Link = result.get('optimizedThumbUrls').get('srpDesktop')
-        high_resolution_link: Link = photo_link.replace('250', '1280').replace('140', '720')
+        high_resolution_link: Link = trying_to_get_link(result)
 
         distance_to_center = result.get('landmarks')[0].get('distance')
         correct_distance: KM = distance_str_to_float_in_km(str_distance=distance_to_center)

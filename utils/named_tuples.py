@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 from aiogram.types.inline_keyboard import InlineKeyboardMarkup
 
 KM = float
@@ -35,3 +35,9 @@ class HotelMessage(NamedTuple):
     text: str
     photo: Link
     buttons: InlineKeyboardMarkup
+
+
+class HotelToDb(NamedTuple):
+    chat_id: int
+    photo_id: Optional[str]
+    inline_keyboard: dict

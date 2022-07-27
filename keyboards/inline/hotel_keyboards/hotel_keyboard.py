@@ -2,6 +2,7 @@ from aiogram.types.inline_keyboard import InlineKeyboardMarkup, InlineKeyboardBu
 
 from telegram_bot_pagination import InlineKeyboardPaginator
 
+from keyboards.inline.markup_from_dict import inline_markup_from_dict
 from utils.named_tuples import HotelInfo, Degrees
 
 
@@ -11,6 +12,7 @@ def create_hotel_keyboard(info: HotelInfo) -> InlineKeyboardMarkup:
     - Booking hotel
     - Show on maps
     - Get photos
+    - Add to favorites
     """
 
     keyboard = InlineKeyboardMarkup(row_width=1)
@@ -22,9 +24,24 @@ def create_hotel_keyboard(info: HotelInfo) -> InlineKeyboardMarkup:
     maps_button = InlineKeyboardButton('На карте', callback_data=f'get_hotel_map{latitude}/{longitude}')
 
     photos_button = InlineKeyboardButton('Фото', callback_data=f'get_hotel_photos{hotel_id}')
-    keyboard.add(booking_button, maps_button, photos_button)
 
+    favorite_button = InlineKeyboardButton('⭐️ Добавить в избранное', callback_data='add_to_favorites')
+
+    keyboard.add(booking_button, maps_button, photos_button, favorite_button)
     return keyboard
+
+
+def edit_hotel_keyboard_by_favorite(current_keyboard: InlineKeyboardMarkup, is_favorite: bool) -> InlineKeyboardMarkup:
+    keyboard_dict = dict(current_keyboard)
+    favorite_button: dict = keyboard_dict['inline_keyboard'][-1][0]
+    if is_favorite:
+        favorite_button['text'] = 'Удалить из избранного'
+        favorite_button['callback_data'] = 'delete_from_favorites'
+    else:
+        favorite_button['text'] = '⭐️ Добавить в избранное'
+        favorite_button['callback_data'] = 'add_to_favorites'
+
+    return inline_markup_from_dict(dictionary=keyboard_dict)
 
 
 def create_map_keyboard(latitude: Degrees, longitude: Degrees) -> InlineKeyboardMarkup:

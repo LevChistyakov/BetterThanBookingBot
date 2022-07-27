@@ -8,7 +8,9 @@ from utils.named_tuples import Link, ID
 from utils.search_waiting import send_waiting_message, del_waiting_messages
 from utils.work_with_errors import is_message_error, finish_with_error
 
-from keyboards.inline.hotel_keyboards.hotel_keyboard import create_map_keyboard, create_photos_keyboard
+from keyboards.inline.hotel_keyboards.hotel_keyboard import create_map_keyboard, create_photos_keyboard, \
+    edit_hotel_keyboard_by_favorite
+
 from loader import dp, bot
 
 

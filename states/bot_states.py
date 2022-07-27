@@ -29,3 +29,7 @@ class BestDeal(StatesGroup):
     select_distance_range = State()
     wait_min_distance = State()
     wait_max_distance = State()
+
+
+class Favorite(StatesGroup):
+    show_favorite_hotels = State()
