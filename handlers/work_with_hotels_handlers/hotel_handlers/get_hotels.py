@@ -1,6 +1,6 @@
 from aiogram.dispatcher import FSMContext
 from aiogram.types.callback_query import CallbackQuery, Message
-from aiogram.utils.exceptions import InvalidHTTPUrlContent, WrongFileIdentifier
+from aiogram.utils.exceptions import InvalidHTTPUrlContent, WrongFileIdentifier, BadRequest
 
 from rapidapi.parse_responses.find_hotels_and_photos import get_hotels_info
 from rapidapi.parse_responses.hotel_details_utils import is_last_page
@@ -108,4 +108,6 @@ async def trying_to_send_with_photo(message_from_user: Message, hotel_message: H
     except InvalidHTTPUrlContent:
         await message_from_user.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
     except WrongFileIdentifier:
+        await message_from_user.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
+    except BadRequest:
         await message_from_user.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)

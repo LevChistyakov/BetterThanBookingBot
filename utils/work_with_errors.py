@@ -1,6 +1,8 @@
 from aiogram.types.message import Message
 from aiogram.dispatcher import FSMContext
 
+from typing import Union
+
 from handlers.default_handlers.start import go_home
 from utils.search_waiting import del_waiting_messages
 
@@ -21,6 +23,8 @@ def create_error_message(error_text: str) -> str:
         return template.format('Городов с таким названием не найдено')
     if error_text == 'hotels_not_found':
         return template.format('Отелей с заданными условиями не найдено')
+    if error_text == 'favorites_empty':
+        return template.format('Список избранного пуст')
     if error_text == 'empty':
         return template.format('Произошла ошибка при получении информации о городах. Попробуйте еще раз')
     if error_text == 'timeout':
@@ -31,10 +35,15 @@ def create_error_message(error_text: str) -> str:
         return template.format('Возникла ошибка при получении информации. Попробуйте еще раз')
 
 
-async def finish_with_error(message: Message, state: FSMContext, error: str, to_delete: tuple[Message, Message] = None):
+async def finish_with_error(message: Message, state: FSMContext, error: str,
+                            to_delete: Union[tuple[Message, Message], Message] = None):
     """Sends to user message about error and ends the scenario"""
 
     await message.answer(text=create_error_message(error))
-    if to_delete is not None:
+
+    if isinstance(to_delete, Message):
+        await to_delete.delete()
+    elif isinstance(to_delete, tuple) == 1:
         await del_waiting_messages(*to_delete)
+
     await go_home(message, state)

@@ -5,11 +5,13 @@ from aiogram.dispatcher import FSMContext
 from database.favorites.get_favorites import get_favorite_hotels
 from database.favorites.add_favorite import add_to_favorites
 from database.favorites.delete_from_favorites import delete_from_favorites
+from database.favorites.favorite_utils import is_favorites_are_over
 
 from states.bot_states import Favorite
-from handlers.default_handlers.start import go_home
 from keyboards.inline.hotel_keyboards.hotel_keyboard import edit_hotel_keyboard_by_favorite
 from utils.named_tuples import HotelMessage
+from utils.work_with_errors import finish_with_error
+from .get_hotels import trying_to_send_with_photo
 from loader import dp
 
 
@@ -19,17 +21,14 @@ async def show_favorite_hotels(message: Message, state: FSMContext):
 
     favorite_hotels: list[HotelMessage] = await get_favorite_hotels(message=message)
     if favorite_hotels:
-        await message.answer('Избранные отели:', reply_markup=ReplyKeyboardRemove())
+        to_delete = await message.answer('Избранные отели:', reply_markup=ReplyKeyboardRemove())
+        await state.update_data(favorite_message_to_delete=to_delete)
     else:
-        await message.answer('Список избранного пуст')
-        await go_home(message=message, state=state)
+        await finish_with_error(message=message, error='favorites_empty', state=state)
         return
 
     for hotel in favorite_hotels:
-        await message.bot.send_photo(chat_id=message.chat.id,
-                                     photo=hotel.photo,
-                                     caption=hotel.text,
-                                     reply_markup=hotel.buttons)
+        await trying_to_send_with_photo(message_from_user=message, hotel_message=hotel)
 
 
 @dp.callback_query_handler(lambda call: call.data == 'add_to_favorites', state='*')
@@ -50,3 +49,9 @@ async def delete_hotel_from_favorites(call: CallbackQuery, state: FSMContext):
     current_state = await state.get_state()
     if current_state == Favorite.show_favorite_hotels.state:
         await call.message.delete()
+
+    is_favorites_are_over_ = await is_favorites_are_over(message=call.message)
+    if is_favorites_are_over_:
+        state_data = await state.get_data()
+        message_to_delete: Message = state_data.get('favorite_message_to_delete')
+        await finish_with_error(message=call.message, error='favorites_empty', state=state, to_delete=message_to_delete)
