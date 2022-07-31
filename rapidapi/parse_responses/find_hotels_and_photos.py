@@ -44,6 +44,7 @@ def parse_hotels_info(results: list[dict], date_in: date, date_out: date) -> lis
     hotels_info = list()
     for result in results:
         name: str = result.get('name')
+        stars: int = int(result.get('starRating'))
         address_info = result.get('address')
         address: str = generate_address(info=address_info)
 
@@ -62,6 +63,7 @@ def parse_hotels_info(results: list[dict], date_in: date, date_out: date) -> lis
         hotels_info.append(HotelInfo(
             hotel_id=hotel_id,
             name=name,
+            stars=stars,
             address=address,
             distance_from_center=correct_distance,
             total_cost=round(total_price, 2),

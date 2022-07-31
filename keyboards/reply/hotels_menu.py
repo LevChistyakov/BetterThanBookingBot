@@ -4,14 +4,18 @@ from aiogram.types.reply_keyboard import ReplyKeyboardMarkup, KeyboardButton
 def home_menu_keyboard() -> ReplyKeyboardMarkup:
     """Creates basic home menu Keyboard"""
 
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    favorites_button = KeyboardButton('⭐️ Избранное')
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+    help_button = KeyboardButton('Справка')
     lopwrice_button = KeyboardButton('Топ недорогих отелей')
     highprice_button = KeyboardButton('Топ дорогих отелей')
     bestdeal_button = KeyboardButton('Поиск с параметрами')
-    help_button = KeyboardButton('Справка')
+    history_button = KeyboardButton('История поиска')
+    favorites_button = KeyboardButton('⭐️ Избранное')
 
-    keyboard.add(favorites_button, lopwrice_button, highprice_button, bestdeal_button, help_button)
+    keyboard.row(help_button)
+    keyboard.row(lopwrice_button, highprice_button)
+    keyboard.row(bestdeal_button)
+    keyboard.row(history_button, favorites_button)
 
     return keyboard
 

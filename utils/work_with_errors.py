@@ -4,7 +4,7 @@ from aiogram.dispatcher import FSMContext
 from typing import Union
 
 from handlers.default_handlers.start import go_home
-from utils.search_waiting import del_waiting_messages
+from utils.work_with_messages.search_waiting import del_waiting_messages
 
 
 def is_message_error(message) -> bool:

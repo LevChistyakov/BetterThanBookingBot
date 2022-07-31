@@ -23,6 +23,7 @@ class CalendarMarkupAndStep(NamedTuple):
 class HotelInfo(NamedTuple):
     hotel_id: ID
     name: str
+    stars: int
     address: str
     distance_from_center: KM
     total_cost: USD

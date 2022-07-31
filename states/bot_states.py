@@ -33,3 +33,7 @@ class BestDeal(StatesGroup):
 
 class Favorite(StatesGroup):
     show_favorite_hotels = State()
+
+
+class History(StatesGroup):
+    show_history = State()

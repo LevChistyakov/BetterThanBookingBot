@@ -1,2 +1,2 @@
-from . import get_cities
-from . import get_hotel
+from . import get_cities_message
+from . import get_hotel_message

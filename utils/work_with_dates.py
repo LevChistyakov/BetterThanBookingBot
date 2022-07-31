@@ -7,12 +7,12 @@ def get_readble_date_time(str_datetime: str) -> str:
     date, time_ = str_datetime.split()
     correct_time = time_.split('.')[0].split(':')[:2]
 
-    return f'{":".join(correct_time)}, {get_readble_date(date)}'
+    return f'{":".join(correct_time)}, {get_readble_date(date, ending="го")}'
 
 
-def get_readble_date(str_date: str) -> str:
+def get_readble_date(str_date: str, ending: str = 'е') -> str:
     """Creates a written version of date from a date object string"""
 
     year, month, day = str_date.split('-')
 
-    return f'{day.lstrip("0")}-е {NUMBERS_TO_MONTHS[month]} {year}-го года'
+    return f'{day.lstrip("0")}-{ending} {NUMBERS_TO_MONTHS[month]} {year}-го года'

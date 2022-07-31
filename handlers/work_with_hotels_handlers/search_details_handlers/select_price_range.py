@@ -5,7 +5,7 @@ from keyboards.inline.bestdeal.select_keyboards import price_range_keyboard
 from states.bot_states import BestDeal
 
 from .select_distance_range import start_select_distance_range
-from utils.delete_messages import delete_errors_messages
+from utils.work_with_messages.delete_messages import delete_errors_messages
 from loader import dp
 
 

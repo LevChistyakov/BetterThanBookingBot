@@ -8,10 +8,7 @@ async def find_cities(city: str) -> dict:
     Returns dict where keys are cities names and values are cities id
     """
 
-    try:
-        cities_dict: dict = await get_cities_json(city=city)
-    except ResponseIsEmptyError:
-        return {'error': 'empty'}
+    cities_dict: dict = await trying_to_get_cities_dict(city=city)
 
     if cities_dict.get('error') is not None:
         return cities_dict
@@ -27,3 +24,18 @@ async def find_cities(city: str) -> dict:
         cities_with_id[name] = city_id
 
     return cities_with_id
+
+
+async def trying_to_get_cities_dict(city: str) -> dict:
+    tries = 0
+
+    while tries < 3:
+        try:
+            cities_dict: dict = await get_cities_json(city=city)
+            tries += 1
+            if isinstance(cities_dict, dict):
+                return cities_dict
+        except ResponseIsEmptyError:
+            return {'error': 'empty'}
+
+    return {'error': 'empty'}

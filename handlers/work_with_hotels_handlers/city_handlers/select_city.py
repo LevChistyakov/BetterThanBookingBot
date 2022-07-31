@@ -1,12 +1,12 @@
 from aiogram.types.message import Message
 from aiogram.dispatcher import FSMContext
 
-from rapidapi.create_messages.get_cities import create_cities_message
+from rapidapi.create_messages.get_cities_message import create_cities_message
 
 from handlers.work_with_hotels_handlers.hotel_handlers.get_hotels import finish_with_error
 
 from states.bot_states import SelectCity
-from utils.search_waiting import send_waiting_message, del_waiting_messages
+from utils.work_with_messages.search_waiting import send_waiting_message, del_waiting_messages
 from utils.work_with_errors import is_message_error
 from loader import dp
 

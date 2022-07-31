@@ -1,19 +1,18 @@
 from aiogram.dispatcher import FSMContext
 from aiogram.types.callback_query import CallbackQuery, Message
-from aiogram.utils.exceptions import InvalidHTTPUrlContent, WrongFileIdentifier, BadRequest
 
 from rapidapi.parse_responses.find_hotels_and_photos import get_hotels_info
 from rapidapi.parse_responses.hotel_details_utils import is_last_page
-from rapidapi.create_messages.get_hotel import create_hotel_message
+from rapidapi.create_messages.get_hotel_message import create_hotel_message
 
 from states.bot_states import GetHotels, SelectCity
-from utils.search_waiting import send_waiting_message, del_waiting_messages
+from utils.work_with_messages.search_waiting import send_waiting_message, del_waiting_messages
+from utils.work_with_messages.send_message_with_photo import trying_to_send_with_photo
 from utils.work_with_errors import is_message_error, finish_with_error
 from utils.named_tuples import HotelInfo, HotelMessage
 
 from database.history.update_history import add_hotel_to_history
 from keyboards.reply.hotels_menu import show_more_hotels_keyboard
-from handlers.default_handlers.start import go_home
 from loader import dp
 
 
@@ -55,13 +54,6 @@ async def send_new_hotel(message: Message, state: FSMContext):
     await state.update_data(hotel_index=hotel_index + 1)
 
 
-@dp.message_handler(lambda message: message.text == 'Главное меню', state=GetHotels.get_hotels_menu)
-async def go_to_main_menu(message: Message, state: FSMContext):
-    """Ends the scenario. Returns to home menu"""
-
-    await go_home(message=message, state=state)
-
-
 async def send_first_hotel(message: Message, state: FSMContext, page: int):
     """Sends first hotel on selected page. If pages are over the output ends"""
 
@@ -99,20 +91,3 @@ async def change_info(call: CallbackQuery):
     await call.answer('Укажите информацию заново', show_alert=True)
     await SelectCity.wait_city_name.set()
     await call.message.edit_text('<b>↘️ Отправьте боту город для поиска</b>')
-
-
-async def trying_to_send_with_photo(message_from_user: Message, hotel_message: HotelMessage):
-    """Tries to send message about hotel with photo. If exception is found sends without photo"""
-
-    try:
-        message = await message_from_user.bot.send_photo(chat_id=message_from_user.chat.id, photo=hotel_message.photo,
-                                                         caption=hotel_message.text,
-                                                         reply_markup=hotel_message.buttons)
-    except InvalidHTTPUrlContent:
-        message = await message_from_user.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
-    except WrongFileIdentifier:
-        message = await message_from_user.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
-    except BadRequest:
-        message = await message_from_user.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
-
-    return message

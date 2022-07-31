@@ -13,6 +13,13 @@ async def get_started(message: Message):
     await message.answer('❓ <b>Выберите действие</b>', reply_markup=home_menu_keyboard())
 
 
+@dp.message_handler(lambda message: message.text == 'Главное меню', state='*')
+async def go_to_main_menu(message: Message, state: FSMContext):
+    """Ends the scenario. Returns to home menu"""
+
+    await go_home(message=message, state=state)
+
+
 async def go_home(message: Message, state: FSMContext):
     """Ends the scenario. Returns to home menu"""
 

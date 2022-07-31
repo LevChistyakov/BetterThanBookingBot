@@ -1,6 +1,6 @@
 from aiogram.types.message import Message
 
-from utils.delete_messages import delete_message
+from utils.work_with_messages.delete_messages import delete_message
 
 
 async def send_waiting_message(message: Message) -> tuple[Message, Message]:

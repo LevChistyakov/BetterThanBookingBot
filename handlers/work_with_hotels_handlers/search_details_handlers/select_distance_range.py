@@ -5,7 +5,7 @@ from keyboards.inline.bestdeal.select_keyboards import distance_range_keyboard
 from states.bot_states import BestDeal, SelectDates
 from utils.named_tuples import KM
 
-from utils.delete_messages import delete_errors_messages
+from utils.work_with_messages.delete_messages import delete_errors_messages
 from .select_date import start_select_date_in
 from loader import dp
 

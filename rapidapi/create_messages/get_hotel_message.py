@@ -6,6 +6,7 @@ def create_hotel_message(hotel_info: HotelInfo) -> HotelMessage:
     """Creates message from hotel info. Returns hotel photo, caption and inline buttons with actions for hotel"""
 
     text = f'<b>{hotel_info.name}</b>\n' \
+           f'\tРейтинг: {hotel_info.stars} ⭐️\n' \
            f'\tАдрес: {hotel_info.address}\n' \
            f'\tРасстояние до центра: {hotel_info.distance_from_center} км\n' \
            f'\tСтоимость: {hotel_info.total_cost} $\n' \
