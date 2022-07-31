@@ -4,7 +4,7 @@ from aiogram.dispatcher.filters import Command, Text
 from aiogram.types.reply_keyboard import ReplyKeyboardRemove
 
 from database.history.update_history import add_command_to_history
-from datetime import datetime
+from photos.work_with_photos import get_photo_by_command
 from states.bot_states import SelectCity
 from loader import dp
 
@@ -13,44 +13,50 @@ from loader import dp
 async def define_state(message: Message, state: FSMContext):
     """"Catches lowprice and higprice commands. Asks user for city name"""
 
-    await message.answer('<b>↘️ Отправьте боту город для поиска</b>', reply_markup=ReplyKeyboardRemove())
+    command = message.text.lstrip('/')
+    await send_city_request_with_photo(message, command)
     await SelectCity.wait_city_name.set()
 
-    command = message.text.lstrip('/')
     await register_command_in_db(command, message, state)
 
 
-@dp.message_handler(Text(['Топ недорогих отелей']), state='*')
+@dp.message_handler(Text(['⬇️ Недорогие отели']), state='*')
 async def show_lowprice(message: Message, state: FSMContext):
     """"Catches text about lowprice hotels. Asks user for city name"""
 
-    await message.answer('<b>↘️ Отправьте боту город для поиска</b>', reply_markup=ReplyKeyboardRemove())
+    command = 'lowprice'
+    await send_city_request_with_photo(message, command)
     await SelectCity.wait_city_name.set()
 
-    command = 'lowprice'
     await register_command_in_db(command, message, state)
 
 
-@dp.message_handler(Text(['Топ дорогих отелей']), state='*')
+@dp.message_handler(Text(['⬆️ Дорогие отели']), state='*')
 async def show_highprice(message: Message, state: FSMContext):
     """"Catches text about highprice hotels. Asks user for city name"""
 
-    await message.answer('<b>↘️ Отправьте боту город для поиска</b>', reply_markup=ReplyKeyboardRemove())
+    command = 'highprice'
+    await send_city_request_with_photo(message, command)
     await SelectCity.wait_city_name.set()
 
-    command = 'highprice'
     await register_command_in_db(command, message, state)
 
 
-@dp.message_handler(Text(['Поиск с параметрами']), state='*')
+@dp.message_handler(Text(['🔍 Поиск с параметрами']), state='*')
 async def show_highprice(message: Message, state: FSMContext):
     """"Catches text about hotels with best deal. Asks user for city name"""
 
-    await message.answer('<b>↘️ Отправьте боту город для поиска</b>', reply_markup=ReplyKeyboardRemove())
+    command = 'bestdeal'
+    await send_city_request_with_photo(message, command)
     await SelectCity.wait_city_name.set()
 
-    command = 'bestdeal'
     await register_command_in_db(command, message, state)
+
+
+async def send_city_request_with_photo(message: Message, command: str):
+    await message.bot.send_photo(photo=get_photo_by_command(command=command), chat_id=message.chat.id,
+                                 caption='<b>↘️ Отправьте боту город для поиска</b>',
+                                 reply_markup=ReplyKeyboardRemove())
 
 
 async def register_command_in_db(command: str, message: Message, state: FSMContext):

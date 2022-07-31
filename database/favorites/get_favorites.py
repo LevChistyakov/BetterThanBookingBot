@@ -2,6 +2,7 @@ from aiogram.types.message import Message
 
 from database.connect_to_db.client import get_favorites_collection
 from database.utils.hotel_message_to_dict import hotel_message_from_hotel_dict
+
 from utils.named_tuples import HotelMessage
 
 

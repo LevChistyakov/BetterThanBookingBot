@@ -1,7 +1,10 @@
 from aiogram.types.message import Message
-from aiogram.types.inline_keyboard import InlineKeyboardButton
+from aiogram.types.inline_keyboard import InlineKeyboardButton, InlineKeyboardMarkup
 
 from database.connect_to_db.client import get_favorites_collection
+from keyboards.inline.hotel_keyboards.hotel_keyboard import edit_hotel_keyboard_by_favorite
+
+from utils.named_tuples import HotelMessage
 from typing import Optional
 
 
@@ -13,10 +16,8 @@ def get_photo_id(message: Message) -> Optional[str]:
     return message.photo[-1]['file_id']
 
 
-def get_hotel_id(message: Message) -> str:
-    keyboard = message.reply_markup
-    inline_markup = keyboard.inline_keyboard
-    link_button: InlineKeyboardButton = inline_markup[0][0]
+def get_hotel_id(inline_markup: InlineKeyboardMarkup) -> str:
+    link_button: InlineKeyboardButton = inline_markup.inline_keyboard[0][0]
     link = link_button.url
 
     hotel_id = link.lstrip('http://hotels.com/ho')
@@ -33,3 +34,15 @@ async def is_favorites_are_over(message: Message) -> bool:
         return True
 
     return False
+
+
+async def get_correct_hotel_info_by_favorites(user_id, hotel: HotelMessage) -> HotelMessage:
+    collection = get_favorites_collection()
+    user = await collection.find_one({'_id': user_id})
+    user_favorites: dict = user['favorites']
+    if get_hotel_id(hotel.buttons) in user_favorites:
+        return hotel
+    else:
+        return HotelMessage(text=hotel.text,
+                            photo=hotel.photo,
+                            buttons=edit_hotel_keyboard_by_favorite(hotel.buttons, is_favorite=False))

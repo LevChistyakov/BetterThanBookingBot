@@ -4,6 +4,7 @@ from aiogram.types.inline_keyboard import InlineKeyboardMarkup
 KM = float
 USD = float
 Link = str
+PhotoID = str
 ID = int
 Degrees = float
 Latitude = Degrees

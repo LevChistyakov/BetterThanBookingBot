@@ -10,6 +10,7 @@ from database.favorites.delete_favorites import clear_favorites
 from database.utils.utils import is_favorites_are_over
 
 from states.bot_states import Favorite
+from photos.work_with_photos import Photos
 from keyboards.inline.hotel_keyboards.hotel_keyboard import edit_hotel_keyboard_by_favorite
 from keyboards.reply.favorite_hotels_menu import create_favorites_menu
 from utils.named_tuples import HotelMessage
@@ -25,7 +26,9 @@ async def show_favorite_hotels(message: Message, state: FSMContext):
 
     favorite_hotels: list[HotelMessage] = await get_favorite_hotels(message=message)
     if favorite_hotels:
-        to_delete = await message.answer('Избранные отели:', reply_markup=create_favorites_menu())
+        to_delete = await message.bot.send_photo(photo=Photos.favorites.value, chat_id=message.chat.id,
+                                                 caption='<b>Избранные отели:</b>',
+                                                 reply_markup=create_favorites_menu())
         sended_messages.append(to_delete)
         await state.update_data(favorite_message_to_delete=to_delete)
     else:
@@ -42,7 +45,7 @@ async def show_favorite_hotels(message: Message, state: FSMContext):
 @dp.callback_query_handler(lambda call: call.data == 'add_to_favorites', state='*')
 async def add_hotel_to_favorites(call: CallbackQuery):
     await add_to_favorites(message=call.message)
-    await call.answer('Добавлено в избранное!', show_alert=True)
+    await call.answer('Добавлено в избранное!', show_alert=False)
     await call.message.edit_reply_markup(edit_hotel_keyboard_by_favorite(current_keyboard=call.message.reply_markup,
                                                                          is_favorite=True))
 
@@ -50,7 +53,7 @@ async def add_hotel_to_favorites(call: CallbackQuery):
 @dp.callback_query_handler(lambda call: call.data == 'delete_from_favorites', state='*')
 async def delete_hotel_from_favorites(call: CallbackQuery, state: FSMContext):
     await delete_from_favorites(message=call.message)
-    await call.answer('Удалено из избранного!', show_alert=True)
+    await call.answer('Удалено из избранного!', show_alert=False)
     await call.message.edit_reply_markup(edit_hotel_keyboard_by_favorite(current_keyboard=call.message.reply_markup,
                                                                          is_favorite=False))
 
@@ -66,7 +69,7 @@ async def delete_hotel_from_favorites(call: CallbackQuery, state: FSMContext):
                                     to_delete=message_to_delete)
 
 
-@dp.message_handler(Text('Очистить избранное'), state=Favorite.show_favorite_hotels)
+@dp.message_handler(Text('❌ Очистить избранное'), state=Favorite.show_favorite_hotels)
 async def clear_favorite_hotels(message: Message, state: FSMContext):
     state_data = await state.get_data()
     favorites_to_delete: list[Message] = state_data.get('favorites_to_delete')

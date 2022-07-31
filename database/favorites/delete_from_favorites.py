@@ -8,6 +8,6 @@ async def delete_from_favorites(message: Message):
     user = await collection.find_one({'_id': message.chat.id})
     user_favorites: dict = user['favorites']
 
-    del user_favorites[get_hotel_id(message)]
+    del user_favorites[get_hotel_id(message.reply_markup)]
 
     await collection.update_one({'_id': message.chat.id}, {'$set': {'favorites': user_favorites}})

@@ -33,7 +33,7 @@ async def find_hotels_if_info_correct(call: CallbackQuery, state: FSMContext):
         await change_info(call=call)
 
 
-@dp.message_handler(lambda message: message.text == 'Показать еще', state=GetHotels.get_hotels_menu)
+@dp.message_handler(lambda message: message.text == '➕ Показать еще', state=GetHotels.get_hotels_menu)
 async def send_new_hotel(message: Message, state: FSMContext):
     """Sends message about another hotel"""
 
