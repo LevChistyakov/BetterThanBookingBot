@@ -23,6 +23,7 @@ async def start_select_distance_range(call, state):
 async def send_max_distance_request(call: CallbackQuery, state: FSMContext):
     """Asks the user for the maximum distance from the center"""
 
+    await call.message.edit_reply_markup(reply_markup=None)
     message = await call.message.answer('<b>Отправьте максимальную удаленность от центра в Км</b>\n'
                                         'Пример: <b>5</b> или <b>10.5</b>')
     await state.update_data(message_to_delete=message)

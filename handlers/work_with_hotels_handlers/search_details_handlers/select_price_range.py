@@ -21,6 +21,7 @@ async def start_select_price_range(call: CallbackQuery, state: FSMContext):
 async def send_min_price_request(call: CallbackQuery, state: FSMContext):
     """Asks the user for the minimal price per night"""
 
+    await call.message.edit_reply_markup(reply_markup=None)
     message = await call.message.answer('<b>Отправьте минимальную цену в $</b>\n'
                                         'Пример: <b>100</b> или <b>50.25</b>')
     await state.update_data(message_to_delete=message)
@@ -69,6 +70,7 @@ async def get_min_price(message: Message, state: FSMContext):
 async def send_max_price_request(call: CallbackQuery, state: FSMContext):
     """Asks the user for the maximum price per night"""
 
+    await call.message.edit_reply_markup(reply_markup=None)
     message = await call.message.answer('<b>Отправьте максимальную цену в $</b>\n'
                                         'Пример: <b>100</b> или <b>50.25</b>')
     await state.update_data(message_to_delete=message)

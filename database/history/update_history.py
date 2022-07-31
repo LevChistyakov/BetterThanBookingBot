@@ -24,7 +24,7 @@ async def add_hotel_to_history(message: Message, call_time):
     await collection.update_one({'_id': message.chat.id}, {'$set': {'history': history}})
 
 
-async def add_command_to_history(command: str, call_time: Message.date, message: Message):
+async def add_command_to_history(command: str, call_time, message: Message):
     """Adds called command to db, by time when command was called """
 
     collection = get_history_collection()
