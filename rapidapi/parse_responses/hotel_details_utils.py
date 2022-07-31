@@ -20,10 +20,13 @@ def generate_address(info: dict) -> str:
 
 
 def trying_to_get_link(result: dict) -> str:
+    """Tries to get hotel photo in high quality"""
+
     try:
         photo_link: Link = result.get('optimizedThumbUrls').get('srpDesktop')
         high_resolution_link: Link = photo_link.replace('250', '1280').replace('140', '720')
         return high_resolution_link
+
     except AttributeError:
         return 'link_not_found'
 

@@ -10,13 +10,15 @@ from keyboards.reply.history_menu import create_history_menu
 from states.bot_states import History
 from photos.work_with_photos import Photos
 from utils.work_with_messages.send_message_with_photo import trying_to_send_with_photo
-from utils.work_with_errors import finish_with_error
+from utils.misc.work_with_errors import finish_with_error
 from utils.named_tuples import HistoryPage
 from loader import dp
 
 
 @dp.message_handler(Command('history'), state='*')
 async def show_history(message: Message, state: FSMContext):
+    """Sends the user his history"""
+
     await History.show_history.set()
 
     user_history: list[HistoryPage] = await get_history(message=message)
@@ -34,6 +36,8 @@ async def show_history_(message: Message, state: FSMContext):
 
 
 async def send_history_pages(message: Message, history: list[HistoryPage]) -> list[Message]:
+    """Sends history pages to user"""
+
     sended_history_messages = list()
 
     history_caption = await message.bot.send_photo(photo=Photos.history.value, chat_id=message.chat.id,
@@ -54,10 +58,13 @@ async def send_history_pages(message: Message, history: list[HistoryPage]) -> li
 
 @dp.message_handler(Text('❌ Очистить историю'), state=History.show_history)
 async def clear_user_history(message: Message, state: FSMContext):
+    """Clear all user history"""
+
     state_data = await state.get_data()
     history_to_delete: list[Message] = state_data.get('history_to_delete')
 
     await clear_history(user_id=message.chat.id)
     for history_message in history_to_delete:
         await history_message.delete()
+
     await finish_with_error(message=message, state=state, error='history_empty')

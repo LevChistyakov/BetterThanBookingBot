@@ -6,7 +6,7 @@ from rapidapi.parse_responses.find_hotels_and_photos import get_hotel_photo_link
 
 from utils.named_tuples import Link, ID
 from utils.work_with_messages.search_waiting import send_waiting_message, del_waiting_messages
-from utils.work_with_errors import is_message_error, finish_with_error
+from utils.misc.work_with_errors import is_message_error, finish_with_error
 
 from keyboards.inline.hotel_keyboards.hotel_keyboard import create_map_keyboard, create_photos_keyboard
 

@@ -2,6 +2,8 @@ from aiogram.types.reply_keyboard import ReplyKeyboardMarkup, KeyboardButton
 
 
 def create_favorites_menu():
+    """Creates reply keyboard when favorites hotels are shows"""
+
     keyboard = ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
 
     clear_history_button = KeyboardButton('❌ Очистить избранное')

@@ -8,7 +8,7 @@ from rapidapi.create_messages.get_hotel_message import create_hotel_message
 from states.bot_states import GetHotels, SelectCity
 from utils.work_with_messages.search_waiting import send_waiting_message, del_waiting_messages
 from utils.work_with_messages.send_message_with_photo import trying_to_send_with_photo
-from utils.work_with_errors import is_message_error, finish_with_error
+from utils.misc.work_with_errors import is_message_error, finish_with_error
 from utils.named_tuples import HotelInfo, HotelMessage
 
 from database.history.update_history import add_hotel_to_history

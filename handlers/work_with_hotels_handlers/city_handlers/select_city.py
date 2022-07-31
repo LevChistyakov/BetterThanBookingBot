@@ -7,7 +7,7 @@ from handlers.work_with_hotels_handlers.hotel_handlers.get_hotels import finish_
 
 from states.bot_states import SelectCity
 from utils.work_with_messages.search_waiting import send_waiting_message, del_waiting_messages
-from utils.work_with_errors import is_message_error
+from utils.misc.work_with_errors import is_message_error
 from loader import dp
 
 

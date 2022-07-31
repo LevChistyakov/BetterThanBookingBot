@@ -6,7 +6,9 @@ from database.utils.hotel_message_to_dict import hotel_message_from_hotel_dict
 from utils.named_tuples import HotelMessage
 
 
-async def get_favorite_hotels(message: Message):
+async def get_favorite_hotels(message: Message) -> list[HotelMessage]:
+    """Returns list of user favorite hotels from db"""
+
     found_hotels: dict = await find_favorite_hotels_in_db(user_id=message.chat.id)
     hotel_messages: list[HotelMessage] = parse_favorite_hotels_info(hotels=found_hotels)
 
@@ -14,6 +16,8 @@ async def get_favorite_hotels(message: Message):
 
 
 async def find_favorite_hotels_in_db(user_id: int) -> dict:
+    """Finds user favorite hotels in db"""
+
     collection = get_favorites_collection()
 
     user: dict = await collection.find_one({'_id': user_id})
@@ -23,6 +27,8 @@ async def find_favorite_hotels_in_db(user_id: int) -> dict:
 
 
 def parse_favorite_hotels_info(hotels: dict) -> list[HotelMessage]:
+    """Returns list of favorite hotel messages by found favorites"""
+
     hotel_messages = list()
 
     for hotel_info in hotels.values():

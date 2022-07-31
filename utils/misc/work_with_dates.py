@@ -4,6 +4,8 @@ NUMBERS_TO_MONTHS = {'01': 'января', '02': 'февраля', '03': 'мар
 
 
 def get_readble_date_time(str_datetime: str) -> str:
+    """Creates a written version of date and time from a datetime object string"""
+
     date, time_ = str_datetime.split()
     correct_time = time_.split('.')[0].split(':')[:2]
 

@@ -34,6 +34,4 @@ async def bot_help(message: Message):
 
 @dp.message_handler(Text('ℹ️ Справка'), state='*')
 async def bot_help_(message: Message):
-    """Send the user a description of commands and other useful information"""
-
     await bot_help(message=message)

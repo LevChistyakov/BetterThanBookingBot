@@ -5,7 +5,6 @@ from typing import Optional
 
 from utils.named_tuples import CalendarMarkupAndStep
 
-
 CUSTOM_STEPS = {'y': 'год', 'm': 'месяц', 'd': 'день'}
 
 

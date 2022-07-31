@@ -4,8 +4,8 @@ from aiogram.types.callback_query import CallbackQuery
 from datetime import datetime
 
 from states.bot_states import SelectDates, GetHotels
-from utils.is_correct_inline import is_correct_markup
-from utils.work_with_dates import get_readble_date
+from utils.misc.is_correct_inline import is_correct_markup
+from utils.misc.work_with_dates import get_readble_date
 from keyboards.inline.date_keyboards.date_keyboards import CustomCalendar, CUSTOM_STEPS, create_calendar
 from loader import dp
 

@@ -1,16 +1,17 @@
 from aiogram.types.message import Message
 from motor.motor_asyncio import AsyncIOMotorCollection
 
-from datetime import datetime
 from database.connect_to_db.client import get_history_collection
 from database.utils.hotel_message_to_dict import hotel_dict_from_message
-from utils.work_with_dates import get_readble_date_time
+from utils.misc.work_with_dates import get_readble_date_time
 
 
 async def add_hotel_to_history(message: Message, call_time):
-    collection = get_history_collection()
-    user = await collection.find_one({'_id': message.chat.id})
+    """Adds hotel to user history in db. Adds to history page by time when command was called"""
 
+    collection = get_history_collection()
+
+    user = await collection.find_one({'_id': message.chat.id})
     if user:
         history = user['history']
     else:
@@ -23,7 +24,9 @@ async def add_hotel_to_history(message: Message, call_time):
     await collection.update_one({'_id': message.chat.id}, {'$set': {'history': history}})
 
 
-async def add_command_to_history(command: str, call_time: datetime.utcnow, message: Message):
+async def add_command_to_history(command: str, call_time: Message.date, message: Message):
+    """Adds called command to db, by time when command was called """
+
     collection = get_history_collection()
     user = await collection.find_one({'_id': message.chat.id})
     if user:
@@ -34,6 +37,8 @@ async def add_command_to_history(command: str, call_time: datetime.utcnow, messa
 
 async def add_new_to_history(user: dict, collection: AsyncIOMotorCollection, command: str, call_time: str,
                              message: Message):
+    """Adds command to history if user exists in db"""
+
     user_history = user['history']
     user_history_page = create_history_dict(command=command, call_time=call_time)
     user_history[call_time] = user_history_page
@@ -42,12 +47,16 @@ async def add_new_to_history(user: dict, collection: AsyncIOMotorCollection, com
 
 
 async def create_history(collection: AsyncIOMotorCollection, command: str, call_time: str, message: Message):
+    """Creates user history entry in db. Adds command to user history in db"""
+
     user_history_page = create_history_dict(command=command, call_time=call_time)
 
     await collection.insert_one({'_id': message.chat.id, 'history': {call_time: user_history_page}})
 
 
 def create_history_dict(command: str, call_time: str) -> dict:
+    """Creates history entry by command and time when command was called"""
+
     history_dict = {
         'text': f'<b>Комманда {command} вызвана\n'
                 f'в {get_readble_date_time(call_time)}</b>',

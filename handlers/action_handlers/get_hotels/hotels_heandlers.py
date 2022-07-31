@@ -54,12 +54,16 @@ async def show_highprice(message: Message, state: FSMContext):
 
 
 async def send_city_request_with_photo(message: Message, command: str):
+    """Sends request about city to user with decorate photo"""
+
     await message.bot.send_photo(photo=get_photo_by_command(command=command), chat_id=message.chat.id,
                                  caption='<b>↘️ Отправьте боту город для поиска</b>',
                                  reply_markup=ReplyKeyboardRemove())
 
 
 async def register_command_in_db(command: str, message: Message, state: FSMContext):
+    """Adds called command to db"""
+
     call_time = message.date
 
     await add_command_to_history(command=command, call_time=call_time, message=message)

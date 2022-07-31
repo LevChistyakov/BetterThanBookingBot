@@ -18,6 +18,8 @@ def create_hotel_message(hotel_info: HotelInfo) -> HotelMessage:
 
 
 def get_stars_string(hotel_info: HotelInfo) -> str:
+    """Returns string with stars emojies by stars amount"""
+
     if hotel_info.stars < 1:
         return ''
     return f'\t{"⭐️" * hotel_info.stars}\n'

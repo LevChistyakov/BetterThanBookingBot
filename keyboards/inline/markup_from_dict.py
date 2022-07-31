@@ -2,6 +2,8 @@ from aiogram.types.inline_keyboard import InlineKeyboardMarkup, InlineKeyboardBu
 
 
 def inline_markup_from_dict(dictionary: dict) -> InlineKeyboardMarkup:
+    """Converts keyboard dict to inline markup"""
+
     keyboard = InlineKeyboardMarkup()
     keyboard_info: list = dictionary.get('inline_keyboard')
     for row in keyboard_info:

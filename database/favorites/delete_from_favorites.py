@@ -4,6 +4,8 @@ from database.utils.utils import get_hotel_id
 
 
 async def delete_from_favorites(message: Message):
+    """Deletes hotel from favorites by hotel id (gets from message)"""
+
     collection = get_favorites_collection()
     user = await collection.find_one({'_id': message.chat.id})
     user_favorites: dict = user['favorites']

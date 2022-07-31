@@ -27,12 +27,13 @@ async def find_cities(city: str) -> dict:
 
 
 async def trying_to_get_cities_dict(city: str) -> dict:
-    tries = 0
+    """Tries to get dict with cities 3 times if result not found returns dict with error"""
 
-    while tries < 3:
+    attempts = 0
+    while attempts < 3:
         try:
             cities_dict: dict = await get_cities_json(city=city)
-            tries += 1
+            attempts += 1
             if isinstance(cities_dict, dict):
                 return cities_dict
         except ResponseIsEmptyError:
