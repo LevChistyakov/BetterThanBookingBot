@@ -1,7 +1,7 @@
 from aiogram.types.message import Message
 
 from database.connect_to_db.client import get_favorites_collection
-from keyboards.inline.markup_from_dict import inline_markup_from_dict
+from database.utils.hotel_message_to_dict import hotel_message_from_hotel_dict
 from utils.named_tuples import HotelMessage
 
 
@@ -25,10 +25,6 @@ def parse_favorite_hotels_info(hotels: dict) -> list[HotelMessage]:
     hotel_messages = list()
 
     for hotel_info in hotels.values():
-        hotel_messages.append(HotelMessage(
-            text=hotel_info.get('text'),
-            photo=hotel_info.get('photo_id'),
-            buttons=inline_markup_from_dict(hotel_info.get('keyboard'))
-        ))
+        hotel_messages.append(hotel_message_from_hotel_dict(hotel_info))
 
     return hotel_messages

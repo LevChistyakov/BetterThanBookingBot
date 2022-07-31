@@ -1,6 +1,6 @@
 from aiogram.types.message import Message
 from database.connect_to_db.client import get_favorites_collection
-from .favorite_utils import get_hotel_id
+from database.utils.utils import get_hotel_id
 
 
 async def delete_from_favorites(message: Message):

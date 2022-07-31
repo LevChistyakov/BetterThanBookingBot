@@ -1,12 +1,12 @@
 from aiogram.dispatcher import FSMContext
-from aiogram.types.callback_query import CallbackQuery, Message
+from aiogram.types.callback_query import CallbackQuery
 
 from datetime import datetime
 
 from states.bot_states import SelectDates, GetHotels
 from utils.is_correct_inline import is_correct_markup
-from keyboards.inline.date_keyboards.date_keyboards import CustomCalendar, CUSTOM_STEPS, create_calendar, \
-    get_readble_date
+from utils.work_with_dates import get_readble_date
+from keyboards.inline.date_keyboards.date_keyboards import CustomCalendar, CUSTOM_STEPS, create_calendar
 from loader import dp
 
 

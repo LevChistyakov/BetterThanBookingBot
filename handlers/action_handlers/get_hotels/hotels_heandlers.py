@@ -3,6 +3,8 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command, Text
 from aiogram.types.reply_keyboard import ReplyKeyboardRemove
 
+from database.history.update_history import add_command_to_history
+from datetime import datetime
 from states.bot_states import SelectCity
 from loader import dp
 
@@ -13,9 +15,15 @@ async def define_state(message: Message, state: FSMContext):
 
     await message.answer('<b>↘️ Отправьте боту город для поиска</b>', reply_markup=ReplyKeyboardRemove())
     await SelectCity.wait_city_name.set()
-
+    print(message)
     command = message.text.lstrip('/')
-    await state.update_data(command_type=command)
+    await register_command_in_db(command, message, state)
+
+
+async def register_command_in_db(command: str, message: Message, state: FSMContext):
+    call_time = datetime.utcnow()
+    await add_command_to_history(command=command, call_time=call_time, message=message)
+    await state.update_data(command_type=command, command_call_time=call_time)
 
 
 @dp.message_handler(Text(['Топ недорогих отелей']), state='*')

@@ -37,7 +37,6 @@ class HotelMessage(NamedTuple):
     buttons: InlineKeyboardMarkup
 
 
-class HotelToDb(NamedTuple):
-    chat_id: int
-    photo_id: Optional[str]
-    inline_keyboard: dict
+class HistoryPage(NamedTuple):
+    text: str
+    found_hotels: list[HotelMessage]

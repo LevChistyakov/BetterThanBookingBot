@@ -11,6 +11,7 @@ from utils.search_waiting import send_waiting_message, del_waiting_messages
 from utils.work_with_errors import is_message_error, finish_with_error
 from utils.named_tuples import HotelInfo, HotelMessage
 
+from database.history.update_history import add_hotel_to_history
 from keyboards.reply.hotels_menu import show_more_hotels_keyboard
 from handlers.default_handlers.start import go_home
 from loader import dp
@@ -49,7 +50,8 @@ async def send_new_hotel(message: Message, state: FSMContext):
     hotel = hotels_info[hotel_index]
     hotel_message: HotelMessage = create_hotel_message(hotel_info=hotel)
 
-    await trying_to_send_with_photo(message_from_user=message, hotel_message=hotel_message)
+    message_with_hotel = await trying_to_send_with_photo(message_from_user=message, hotel_message=hotel_message)
+    await add_hotel_to_history(message=message_with_hotel, call_time=state_data.get('command_call_time'))
     await state.update_data(hotel_index=hotel_index + 1)
 
 
@@ -83,7 +85,8 @@ async def send_first_hotel(message: Message, state: FSMContext, page: int):
 
     await del_waiting_messages(text=text_to_delete, sticker=sticker_to_delete)
     await message.answer('<b>Найденные отели:</b>', reply_markup=show_more_hotels_keyboard())
-    await trying_to_send_with_photo(message_from_user=message, hotel_message=hotel_message)
+    message_with_hotel = await trying_to_send_with_photo(message_from_user=message, hotel_message=hotel_message)
+    await add_hotel_to_history(message=message_with_hotel, call_time=state_data.get('command_call_time'))
 
     if is_last_page(hotels_info):
         await state.update_data(last_page=True)
@@ -102,12 +105,14 @@ async def trying_to_send_with_photo(message_from_user: Message, hotel_message: H
     """Tries to send message about hotel with photo. If exception is found sends without photo"""
 
     try:
-        await message_from_user.bot.send_photo(chat_id=message_from_user.chat.id, photo=hotel_message.photo,
-                                               caption=hotel_message.text,
-                                               reply_markup=hotel_message.buttons)
+        message = await message_from_user.bot.send_photo(chat_id=message_from_user.chat.id, photo=hotel_message.photo,
+                                                         caption=hotel_message.text,
+                                                         reply_markup=hotel_message.buttons)
     except InvalidHTTPUrlContent:
-        await message_from_user.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
+        message = await message_from_user.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
     except WrongFileIdentifier:
-        await message_from_user.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
+        message = await message_from_user.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
     except BadRequest:
-        await message_from_user.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
+        message = await message_from_user.answer(text=hotel_message.text, reply_markup=hotel_message.buttons)
+
+    return message

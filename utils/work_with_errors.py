@@ -25,6 +25,8 @@ def create_error_message(error_text: str) -> str:
         return template.format('Отелей с заданными условиями не найдено')
     if error_text == 'favorites_empty':
         return template.format('Список избранного пуст')
+    if error_text == 'history_empty':
+        return template.format('История пуста')
     if error_text == 'empty':
         return template.format('Произошла ошибка при получении информации о городах. Попробуйте еще раз')
     if error_text == 'timeout':
