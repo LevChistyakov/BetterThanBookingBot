@@ -1,5 +1,6 @@
-from typing import NamedTuple, Optional
 from aiogram.types.inline_keyboard import InlineKeyboardMarkup
+
+from typing import NamedTuple
 
 KM = float
 USD = float
@@ -40,5 +41,6 @@ class HotelMessage(NamedTuple):
 
 
 class HistoryPage(NamedTuple):
+    command_call_time: str
     text: str
     found_hotels: list[HotelMessage]

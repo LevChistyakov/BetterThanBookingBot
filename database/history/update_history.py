@@ -58,9 +58,25 @@ def create_history_dict(command: str, call_time: str) -> dict:
     """Creates history entry by command and time when command was called"""
 
     history_dict = {
-        'text': f'<b>Комманда {command} вызвана\n'
-                f'в {get_readble_date_time(call_time)}</b>',
+        'text': f'<b>Команда</b> /{command} вызвана\n'
+                f'в {get_readble_date_time(call_time)}',
         'found_hotels': []
     }
 
     return history_dict
+
+
+async def add_city_to_history(city: str, call_time: str, user_id: str):
+    """Adds name of the selected city to text in history page"""
+
+    collection = get_history_collection()
+    user = await collection.find_one({'_id': user_id})
+
+    user_history: dict = user['history']
+    history_page: dict = user_history[call_time]
+    text_to_edit = history_page.get('text')
+
+    text_with_city = f'Поиск в городе <b>{city}</b>\n' + text_to_edit
+    history_page['text'] = text_with_city
+
+    await collection.update_one({'_id': user_id}, {'$set': {'history': user_history}})
