@@ -1,18 +1,18 @@
 import os
 from dotenv import load_dotenv, find_dotenv
 
+from .work_with_rapidapi_keys import get_headers_by_correct_rapidapi_key
+
 if not find_dotenv():
     exit('Переменные окружения не загружены т.к отсутствует файл .env')
 else:
     load_dotenv()
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
-RAPID_API_KEY = os.getenv('RAPID_API_KEY')
+MONGO_DB_USERNAME = os.getenv('MONGO_DB_USERNAME')
 MONGO_DB_PASSWORD = os.getenv('MONGO_DB_PASSWORD')
 
-headers = {
-        "X-RapidAPI-Key": RAPID_API_KEY,
-        "X-RapidAPI-Host": "hotels4.p.rapidapi.com"}
+headers = get_headers_by_correct_rapidapi_key()
 
 DEFAULT_COMMANDS = (
     ('start', "Запустить бота"),

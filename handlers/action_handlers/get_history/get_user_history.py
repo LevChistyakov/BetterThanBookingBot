@@ -4,6 +4,7 @@ from aiogram.dispatcher import FSMContext
 
 from database.history.get_history import get_history, get_found_hotels_of_command
 from database.history.delete_history import clear_history
+from database.history.sended_history_messages import SendedHistory
 from database.utils.utils import get_correct_hotel_info_by_favorites
 
 from keyboards.reply.history_menu import create_history_menu
@@ -14,7 +15,7 @@ from photos.work_with_photos import Photos
 
 from utils.work_with_messages.send_message_with_photo import trying_to_send_with_photo
 from utils.misc.work_with_errors import finish_with_error
-from utils.named_tuples import HistoryPage, HotelMessage, SendedHistory
+from utils.named_tuples import HistoryPage, HotelMessage
 from loader import dp
 
 
