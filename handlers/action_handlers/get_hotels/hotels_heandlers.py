@@ -3,9 +3,12 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command, Text
 from aiogram.types.reply_keyboard import ReplyKeyboardRemove
 
+import datetime
+
 from database.history.update_history import add_command_to_history
 from photos.work_with_photos import get_photo_by_command
 from states.bot_states import SelectCity
+from config_data.config import time_offset
 from loader import dp
 
 
@@ -64,7 +67,7 @@ async def send_city_request_with_photo(message: Message, command: str):
 async def register_command_in_db(command: str, message: Message, state: FSMContext):
     """Adds called command to db"""
 
-    call_time = message.date
+    call_time = datetime.datetime.now(time_offset)
 
     await add_command_to_history(command=command, call_time=call_time, message=message)
     await state.update_data(command_type=command, command_call_time=call_time)
