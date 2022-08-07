@@ -18,9 +18,9 @@ def change_rapid_api_key():
     is_requests_amount_are_over = os.getenv('REQUESTS_LIMIT_REACHED')
 
     if is_requests_amount_are_over == 'False':
-        os.environ.setdefault('REQUESTS_LIMIT_REACHED', 'True')
+        os.environ['REQUESTS_LIMIT_REACHED'] = 'True'
     elif is_requests_amount_are_over == 'True':
-        os.environ.setdefault('REQUESTS_LIMIT_REACHED', 'False')
+        os.environ['REQUESTS_LIMIT_REACHED'] = 'False'
 
 
 def get_headers_by_correct_rapidapi_key() -> dict:

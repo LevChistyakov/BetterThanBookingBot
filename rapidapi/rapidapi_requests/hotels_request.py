@@ -1,5 +1,4 @@
 from rapidapi.rapidapi_requests.requests_to_api import request_to_api
-from config_data.config import headers
 
 from datetime import date
 from utils.named_tuples import ID
@@ -16,7 +15,7 @@ async def get_hotels_json(destination_id: str, date_in: date, date_out: date, so
                    "sortOrder": sort_by, "locale": "en_US",
                    "currency": "USD", 'landmarkIds': 'City center'}
 
-    hotels_json = await request_to_api(url=url, headers=headers, querystring=querystring)
+    hotels_json = await request_to_api(url=url, querystring=querystring)
     if hotels_json is None:
         raise ResponseIsEmptyError
 
@@ -34,7 +33,7 @@ async def get_bestdeal_hotels_json(destination_id: str, date_in: date, date_out:
                    "priceMin": str(min_price), "priceMax": str(max_price), "sortOrder": "DISTANCE_FROM_LANDMARK",
                    "locale": "en_US", "currency": "USD", "landmarkIds": "City center"}
 
-    hotels_json = await request_to_api(url=url, headers=headers, querystring=querystring)
+    hotels_json = await request_to_api(url=url, querystring=querystring)
     if hotels_json is None:
         raise ResponseIsEmptyError
 
@@ -48,7 +47,7 @@ async def get_hotel_photos_json(hotel_id: ID) -> dict:
 
     querystring = {"id": str(hotel_id)}
 
-    photos_json = await request_to_api(url=url, headers=headers, querystring=querystring)
+    photos_json = await request_to_api(url=url, querystring=querystring)
     if photos_json is None:
         raise ResponseIsEmptyError
     return photos_json

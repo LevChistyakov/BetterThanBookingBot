@@ -1,6 +1,5 @@
 import os
 from dotenv import load_dotenv, find_dotenv
-from .work_with_rapidapi_keys import get_headers_by_correct_rapidapi_key
 
 import datetime
 
@@ -12,8 +11,6 @@ else:
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 MONGO_DB_USERNAME = os.getenv('MONGO_DB_USERNAME')
 MONGO_DB_PASSWORD = os.getenv('MONGO_DB_PASSWORD')
-
-headers = get_headers_by_correct_rapidapi_key()
 
 time_offset = datetime.timezone(datetime.timedelta(hours=3))
 
